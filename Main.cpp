@@ -2,10 +2,9 @@
 #include <Windows.h>
 #include"Direct3D.h"
 
-
-
-
 const char* WIN_CLASS_NAME = "SanpleGame";
+const int WINDOW_WIDTH = 800;  //ウィンドウの幅
+const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
