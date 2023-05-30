@@ -96,7 +96,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	}
 
 	quad->Release();
-	//delete quad;
+	delete quad;
 	Direct3D::Release();
 	
 	return 0;
