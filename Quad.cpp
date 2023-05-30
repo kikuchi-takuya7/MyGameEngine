@@ -101,5 +101,6 @@ void Quad::Release()
 	delete pConstantBuffer_;
 	delete pIndexBuffer_;
 	delete pVertexBuffer_;
+	
 
 }
