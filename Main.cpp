@@ -95,7 +95,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		}
 	}
 
-	//quad->Release();
+	quad->Release();
 	//delete quad;
 	Direct3D::Release();
 	
@@ -110,12 +110,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CLOSE:
 		PostQuitMessage(0);  //プログラム終了
-		quad->Release();
+		//quad->Release();
 		return 0;
 
 	case WM_DESTROY://ウィンドウが閉じられたら
 		PostQuitMessage(0);  //プログラム終了
-		quad->Release();
+		//quad->Release();
 		return 0;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
