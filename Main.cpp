@@ -82,8 +82,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		{
 			//ƒQ[ƒ€‚Ìˆ—
 
-			//quad->Draw();
-
 			Direct3D::BeginDraw();
 
 			quad->Draw();
@@ -96,7 +94,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	}
 
 	quad->Release();
-	delete quad;
+
 	Direct3D::Release();
 	
 	return 0;

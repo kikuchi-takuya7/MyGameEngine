@@ -18,7 +18,7 @@ void Quad::Initialize()
 		XMVectorSet(1.0f,  1.0f, 0.0f, 0.0f),	// 四角形の頂点（右上）
 		XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f),	// 四角形の頂点（右下）
 		XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f),	// 四角形の頂点（左下）		
-		XMVectorSet(0.0f, 2.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 2.0f, 0.0f, 0.0f),	// 追加した点
 	};
 
 	// 頂点データ用バッファの設定
@@ -68,8 +68,8 @@ void Quad::Draw()
 	//コンスタントバッファに渡す情報
 	XMVECTOR position = { 0, 3, -10, 0 };	//カメラの位置
 	XMVECTOR target = { 0, 0, 0, 0 };	//カメラの焦点
-	XMMATRIX view = XMMatrixLookAtLH(position, target, XMVectorSet(0, 1, 0, 0));	//ビュー行列
-	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 800.0f / 600.0f, 0.1f, 100.0f);//射影行列
+	XMMATRIX view = XMMatrixLookAtLH(position, target, XMVectorSet(0, 1, 0, 0));	//ビュー行列 XMvectorSetでカメラの世界の上下とかを決める？
+	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 800.0f / 600.0f, 0.1f, 100.0f);//射影行列　順番大事　回転してからかけるのかかけてから回転するのかで
 
 	CONSTANT_BUFFER cb;
 	cb.matWVP = XMMatrixTranspose(view * proj);
@@ -93,7 +93,7 @@ void Quad::Draw()
 	Direct3D::pContext->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 	Direct3D::pContext->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 
-	Direct3D::pContext->DrawIndexed(9, 0, 0);
+	Direct3D::pContext->DrawIndexed(9, 0, 0); //インデックス情報の数は何個数字を入れてるか
 
 }
 
