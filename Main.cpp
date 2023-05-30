@@ -1,20 +1,21 @@
 //インクルード
 #include <Windows.h>
 #include"Direct3D.h"
+#include"Quad.h"
 
 const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
+Quad* quad;
+
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-
-
 
 //エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
+
 	//ウィンドウクラス（設計図）を作成
 	WNDCLASSEX wc;
 	wc.cbSize = sizeof(WNDCLASSEX);             //この構造体のサイズ
@@ -59,7 +60,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	ShowWindow(hWnd, nCmdShow);
 
 	Direct3D::Initialize(winW, winH, hWnd);
+
+	quad = new Quad;
 	
+	quad->Initialize();
+
 	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -76,15 +81,24 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		else
 		{
 			//ゲームの処理
-			
+
+			//quad->Draw();
+
 			Direct3D::BeginDraw();
 
+			quad->Draw();
+
 			Direct3D::EndDraw();
+
+			
 
 		}
 	}
 
+	quad->Release();
+	//delete quad;
 	Direct3D::Release();
+	
 	return 0;
 }
 
