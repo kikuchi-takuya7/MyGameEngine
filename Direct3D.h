@@ -5,6 +5,9 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
+#define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
+#define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
+
 //’è”éŒ¾
 //const char* WIN_CLASS_NAME = "SanpleGame";
 //extern const char* WIN_CLASS_NAME;
