@@ -15,7 +15,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 //エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
-
+	
 	//ウィンドウクラス（設計図）を作成
 	WNDCLASSEX wc;
 	wc.cbSize = sizeof(WNDCLASSEX);             //この構造体のサイズ
@@ -58,12 +58,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	//ウィンドウを表示
 	ShowWindow(hWnd, nCmdShow);
+	HRESULT hr;
+	hr = Direct3D::Initialize(winW, winH, hWnd);
+	if (FAILED(hr)) {
+		PostQuitMessage(0);
+	}
 
-	Direct3D::Initialize(winW, winH, hWnd);
 
 	quad = new Quad;
 	
-	quad->Initialize();
+	hr = quad->Initialize();
+	if (FAILED(hr)) {
+		PostQuitMessage(0);
+	}
 
 	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
