@@ -85,14 +85,22 @@ HRESULT Quad::Initialize()
 
 void Quad::Draw()
 {
-	//コンスタントバッファに渡す情報
-	XMVECTOR position = { 0, 3, -10, 0 };	//カメラの位置
-	XMVECTOR target = { 0, 0, 0, 0 };	//カメラの焦点
-	XMMATRIX view = XMMatrixLookAtLH(position, target, XMVectorSet(0, 1, 0, 0));	//ビュー行列 XMvectorSetでカメラの世界の上下とかを決める？
-	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 800.0f / 600.0f, 0.1f, 100.0f);//射影行列　順番大事　回転してからかけるのかかけてから回転するのかで
+
+	////コンスタントバッファに渡す情報
+	//XMVECTOR position = { 0, 3, -10, 0 };	//カメラの位置
+	//XMVECTOR target = { 0, 0, 0, 0 };	//カメラの焦点
+
+	//ビュー行列 カメラの世界の各頂点を決めるのがビュー行列。XMVectorSetでカメラの上下がどこかを決める
+	//XMMATRIX view = XMMatrixLookAtLH(position, target, XMVectorSet(0, 1, 0, 0));	
+
+	//射影行列　遠近感を使用するのに使う：順番大事　回転してからかけるのかかけてから回転するのかで
+	//XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 800.0f / 600.0f, 0.1f, 100.0f);//π÷4という意味で、視野角45度ってこと。PI(π) DIV(÷) 4（πラジアンは180度)
+	// 800.0f / 600.0fはアスペクト比　　
+	//0.1f, 100.0fニア(近)クリッピング面.ファー(遠)クリッピング面:世界は平らだから描画距離を決める.手前も残さないとスペースなくて計算できない.ゲームによるが差はなるべく小さくないとZfightingが起きる
+
 
 	CONSTANT_BUFFER cb;
-	cb.matWVP = XMMatrixTranspose(view * proj);
+	cb.matWVP = XMMatrixTranspose(Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める

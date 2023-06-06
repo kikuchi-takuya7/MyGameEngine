@@ -122,13 +122,13 @@ HRESULT Direct3D::InitShader()
 	// 頂点シェーダの作成（コンパイル）
 	ID3DBlob* pCompileVS = nullptr;
 	D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	assert(pCompileVS != nullptr);
 	hr = pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &pVertexShader);
 	if (FAILED(hr)) {
 		MessageBox(nullptr, "頂点シェーダの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
-	
-	assert(pCompileVS != nullptr);
+
 	//SAFE_RELEASE(pCompileVS);
 	
 	//頂点インプットレイアウト
@@ -146,20 +146,20 @@ HRESULT Direct3D::InitShader()
 	// ピクセルシェーダの作成（コンパイル）
 	ID3DBlob* pCompilePS = nullptr;
 	D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	assert(pCompilePS != nullptr);
 	hr = pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &pPixelShader);
-	//assert()
 	if (FAILED(hr)) {
 		MessageBox(nullptr, "ピクセルシェーダの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 
-	assert(pCompilePS != nullptr);
+	
 	SAFE_RELEASE(pCompilePS);
 
 	//ラスタライザ作成
 	D3D11_RASTERIZER_DESC rdc = {};
 	rdc.CullMode = D3D11_CULL_BACK; //後ろ側は描画しない処理
-	rdc.FillMode = D3D11_FILL_WIREFRAME;//ワイヤーフレームだけ作るか塗るか
+	rdc.FillMode = D3D11_FILL_SOLID;//ワイヤーフレームだけ作るか塗るか
 	rdc.FrontCounterClockwise = FALSE; //時計回りに頂点を描画するか。FALSEだと時計回りに読み込むする
 	hr = pDevice->CreateRasterizerState(&rdc, &pRasterizerState);
 	if (FAILED(hr)) {
