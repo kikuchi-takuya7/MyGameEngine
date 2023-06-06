@@ -66,6 +66,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	Camera::Initialize();
 
+	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
+	Camera::SetPosition(XMFLOAT3(0, 3, -10));
+
 	quad = new Quad;
 	
 	hr = quad->Initialize();
@@ -73,6 +76,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		PostQuitMessage(0);
 	}
 
+	XMMATRIX mat;
+	
+	XMMATRIX matR = XMMatrixIdentity();
+
+	XMMATRIX matT = XMMatrixIdentity();
+
+	XMMATRIX matS = XMMatrixIdentity();
+
+	//matR = XMMatrixRotationZ(XMConvertToRadians(-30));
+	//matT = XMMatrixTranslation(4, 0, 0);
+	//matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
+
+	mat = matS * matR * matT;
 	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -88,12 +104,20 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		//メッセージなし
 		else
 		{
+			static int i = 0;
+			i++;
+			matR = XMMatrixRotationY(XMConvertToRadians(i));
+			
+			if (i >= 360) {
+				i = 0.0f;
+			}
+			mat = matS * matR * matT;
 			//ゲームの処理
+			Camera::Update();
 
 			Direct3D::BeginDraw();
 
-			Camera::Update();
-			quad->Draw();
+			quad->Draw(mat);
 
 			Direct3D::EndDraw();
 
