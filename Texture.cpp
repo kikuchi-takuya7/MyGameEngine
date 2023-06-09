@@ -1,6 +1,5 @@
 #include "Texture.h"
 #include "Direct3D.h"
-
 #include<DirectXTex.h>
 
 #pragma comment(lib,"DirectXTex.lib")
@@ -42,7 +41,7 @@ HRESULT Texture::Load(string filename)
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	hr = Direct3D::pDevice->CreateSamplerState(&SamDesc, &pSampler_);
+	hr = Direct3D::pDevice_->CreateSamplerState(&SamDesc, &pSampler_);
 	if (FAILED(hr)) {
 		MessageBox(nullptr, "サンプラーの作成に失敗しました", "エラー", MB_OK);
 		return E_FAIL;
@@ -54,7 +53,7 @@ HRESULT Texture::Load(string filename)
 	srv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srv.Texture2D.MipLevels = 1;
 
-	hr = CreateShaderResourceView(Direct3D::pDevice, image.GetImages(), image.GetImageCount(), metadata, &pSRV_);
+	hr = CreateShaderResourceView(Direct3D::pDevice_, image.GetImages(), image.GetImageCount(), metadata, &pSRV_);
 	
 	if (FAILED(hr)) {
 		MessageBox(nullptr, "シェーダーリソースビューの作成に失敗しました", "エラー", MB_OK);
