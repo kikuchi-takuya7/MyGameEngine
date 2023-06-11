@@ -8,7 +8,7 @@
 using namespace DirectX;
 using std::array;
 
-const int INDEXNUM = 6;
+const int INDEXNUM = 36;
 
 //コンスタントバッファー
 
@@ -26,6 +26,7 @@ struct VERTEX
 
 class Quad
 {
+protected:
 	ID3D11Buffer* pVertexBuffer_;	//頂点バッファ
 	ID3D11Buffer* pIndexBuffer_;	//インデックスバッファ
 	ID3D11Buffer* pConstantBuffer_;	//コンスタントバッファ
@@ -39,7 +40,8 @@ public:
 	HRESULT Initialize();
 	void Draw(XMMATRIX& worldMatrix);
 	void Release();
-	void MakeVerBf();
+	virtual void MakeVerBf();
+	//VERTEX SetVartices();
 	void MakeIndBf();
 	void MakeConBf();
 	void SetTexture();

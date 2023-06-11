@@ -1,13 +1,13 @@
 //インクルード
 #include <Windows.h>
 #include"Direct3D.h"
-#include"Quad.h"
+#include"dice.h"
 
 const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
-Quad* quad;
+Dice* dice;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -69,16 +69,22 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
 	Camera::SetPosition(XMFLOAT3(0, 3, -10));
 
-	quad = new Quad;
+	dice = new Dice;
 	
-	hr = quad->Initialize();
+	hr = dice->Initialize();
 	if (FAILED(hr)) {
 		PostQuitMessage(0);
 	}
 
 	XMMATRIX mat;
-	
+
 	XMMATRIX matR = XMMatrixIdentity();
+	
+	XMMATRIX matRX = XMMatrixIdentity();
+
+	XMMATRIX matRY = XMMatrixIdentity();
+
+	XMMATRIX matRZ = XMMatrixIdentity();
 
 	XMMATRIX matT = XMMatrixIdentity();
 
@@ -88,7 +94,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	//matT = XMMatrixTranslation(4, 0, 0);
 	//matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
 
-	mat = matS * matR * matT;
+	//mat = matS * matR * matT;
 	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -105,19 +111,20 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		else
 		{
 			static float i = 0;
-			i+=0.1f;
-			matR = XMMatrixRotationY(XMConvertToRadians(i));
-			
-			if (i >= 360) {
-				i = 0.0f;
-			}
+			i+=0.01f;
+
+			matRX = XMMatrixRotationX(XMConvertToRadians(i));
+			matRZ = XMMatrixRotationZ(XMConvertToRadians(i));
+
+			matR = matRX * matRY * matRZ;
+
 			mat = matS * matR * matT;
 			//ゲームの処理
 			Camera::Update();
 
 			Direct3D::BeginDraw();
 
-			quad->Draw(mat);
+			dice->Draw(mat);
 
 			Direct3D::EndDraw();
 
@@ -126,8 +133,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		}
 	}
 
-	//SAFE_RELEASE(quad);
-	SAFE_DELETE(quad);
+	//SAFE_RELEASE(dice);
+	SAFE_DELETE(dice);
 
 	Direct3D::Release();
 	
