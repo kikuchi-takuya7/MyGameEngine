@@ -93,6 +93,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	//matR = XMMatrixRotationZ(XMConvertToRadians(-30));
 	//matT = XMMatrixTranslation(4, 0, 0);
 	//matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
+	matRX = XMMatrixRotationX(XMConvertToRadians(45));
 
 	//mat = matS * matR * matT;
 	//メッセージループ（何か起きるのを待つ）
@@ -111,10 +112,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		else
 		{
 			static float i = 0;
-			i+=0.01f;
+			i+=0.1f;
 
-			matRX = XMMatrixRotationX(XMConvertToRadians(i));
-			matRZ = XMMatrixRotationZ(XMConvertToRadians(i));
+			matRY = XMMatrixRotationY(XMConvertToRadians(i));
+			//matRZ = XMMatrixRotationY(XMConvertToRadians(i));
 
 			matR = matRX * matRY * matRZ;
 
