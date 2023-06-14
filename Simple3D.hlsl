@@ -57,5 +57,5 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 ambentSource = (0.2, 0.2, 0.2, 1.0); //明るくすればツルツルする
 	float4 diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color;//拡散反射色
 	float4 ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambentSource;//環境反射色
-	return (diffuse); //実際の色
+	return (diffuse + ambient); //実際の色
 }
