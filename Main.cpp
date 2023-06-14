@@ -7,7 +7,7 @@ const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
-Dice* dice;
+Quad* dice;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -91,9 +91,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	XMMATRIX matS = XMMatrixIdentity();
 
 	//matR = XMMatrixRotationZ(XMConvertToRadians(-30));
-	//matT = XMMatrixTranslation(4, 0, 0);
+	matT = XMMatrixTranslation(0, 0, -1);
 	//matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
-	matRX = XMMatrixRotationX(XMConvertToRadians(45));
+	//matRX = XMMatrixRotationX(XMConvertToRadians(45));
 
 	//mat = matS * matR * matT;
 	//メッセージループ（何か起きるのを待つ）
@@ -112,14 +112,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		else
 		{
 			static float i = 0;
-			i+=0.1f;
+			i+=0.05f;
 
 			matRY = XMMatrixRotationY(XMConvertToRadians(i));
 			//matRZ = XMMatrixRotationY(XMConvertToRadians(i));
 
 			matR = matRX * matRY * matRZ;
 
-			mat = matS * matR * matT;
+			mat = matT * matR * matS;
 			//ゲームの処理
 			Camera::Update();
 
