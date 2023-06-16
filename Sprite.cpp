@@ -101,7 +101,7 @@ HRESULT Sprite::CreateVertexBuffer()
 	bd_vertex.MiscFlags = 0;
 	bd_vertex.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA data_vertex;
-	data_vertex.pSysMem = &vertices_;
+	data_vertex.pSysMem = &vertices_.front();
 	HRESULT hr;
 	hr = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 	if (FAILED(hr)) {
