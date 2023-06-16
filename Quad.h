@@ -8,7 +8,7 @@
 using namespace DirectX;
 using std::array;
 
-const int INDEXNUM = 36;
+const UINT64 INDEXNUM = 36;
 
 //コンスタントバッファー
 

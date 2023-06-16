@@ -2,12 +2,14 @@
 #include <Windows.h>
 #include"Direct3D.h"
 #include"dice.h"
+#include"Sprite.h"
 
 const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
-Quad* dice;
+Sprite* dice;
+//Quad* dice;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -69,16 +71,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
 	Camera::SetPosition(XMFLOAT3(0, 3, -10));
 
-	dice = new Dice;
-	
+	//dice = new Quad;
+	dice = new Sprite;
+
 	hr = dice->Initialize();
 	if (FAILED(hr)) {
 		PostQuitMessage(0);
 	}
 
-	XMMATRIX mat;
+	XMMATRIX mat   = XMMatrixIdentity();
 
-	XMMATRIX matR = XMMatrixIdentity();
+	XMMATRIX matR  = XMMatrixIdentity();
 	
 	XMMATRIX matRX = XMMatrixIdentity();
 
@@ -86,9 +89,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	XMMATRIX matRZ = XMMatrixIdentity();
 
-	XMMATRIX matT = XMMatrixIdentity();
+	XMMATRIX matT  = XMMatrixIdentity();
 
-	XMMATRIX matS = XMMatrixIdentity();
+	XMMATRIX matS  = XMMatrixIdentity();
 
 	//matR = XMMatrixRotationZ(XMConvertToRadians(-30));
 	matT = XMMatrixTranslation(0, 0, -1);
@@ -117,9 +120,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			matRY = XMMatrixRotationY(XMConvertToRadians(i));
 			//matRZ = XMMatrixRotationY(XMConvertToRadians(i));
 
-			matR = matRX * matRY * matRZ;
+			//matR = matRX * matRY * matRZ;
 
-			mat = matT * matR * matS;
+			//mat = matT * matR * matS;
 			//ゲームの処理
 			Camera::Update();
 
