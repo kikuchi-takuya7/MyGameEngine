@@ -2,7 +2,7 @@
 
 Dice::Dice()
 {
-	
+}
 
 Dice::~Dice()
 {
@@ -54,24 +54,4 @@ void Dice::SetIndex()
 	//         手前　　　　　右面　　　　　裏面　　　　　   左面　　　      　上面　　　　　       下面
 
 	indexNum_ = index_.size();
-}
-
-void Dice::MakeVerBf()
-{
-
-	
-
-	
-
-	// 頂点データ用バッファの設定
-	D3D11_BUFFER_DESC bd_vertex;
-	bd_vertex.ByteWidth = sizeof(vertices);
-	bd_vertex.Usage = D3D11_USAGE_DEFAULT;
-	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd_vertex.CPUAccessFlags = 0;
-	bd_vertex.MiscFlags = 0;
-	bd_vertex.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA data_vertex;
-	data_vertex.pSysMem = &vertices;
-	hr_ = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 }

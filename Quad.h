@@ -6,7 +6,7 @@
 #include <array>
 
 using namespace DirectX;
-using std::array;
+using std::vector;
 
 const UINT64 INDEXNUM = 36;
 
@@ -35,9 +35,9 @@ protected:
 	Texture* pTexture_;
 	HRESULT hr_;
 	int indexNum_;//インデックス数
-	array<int,INDEXNUM> index_;
+	vector<int> index_;
 	int vertexNum_;
-	std::vector<VERTEX> vertices_;
+	vector<VERTEX> vertices_;
 
 public:
 	Quad();
