@@ -9,7 +9,7 @@ const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
 Sprite* sprite;
-Dice* dice;
+Quad* dice;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -71,7 +71,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
 	Camera::SetPosition(XMFLOAT3(0, 3, -10));
 
-	dice = new Dice;
+	dice = new Quad;
 	sprite = new Sprite;
 
 	hr = dice->Initialize();
@@ -131,7 +131,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			sprite->Draw(spritemat);
 
 			static float i = 0;
-			i += 0.05f;
+			i += 0.03f;
 
 			matRY = XMMatrixRotationY(XMConvertToRadians(i));
 			matRZ = XMMatrixRotationY(XMConvertToRadians(i));

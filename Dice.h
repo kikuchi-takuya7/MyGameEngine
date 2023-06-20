@@ -5,5 +5,6 @@ class Dice : public Quad
 public:
 	Dice();
 	~Dice();
-	virtual void MakeVerBf() override;
+	virtual void SetVartices() override;
+	virtual void SetIndex() override;
 };

@@ -34,7 +34,10 @@ protected:
 	ID3D11Buffer* pConstantBuffer_;	//コンスタントバッファ
 	Texture* pTexture_;
 	HRESULT hr_;
+	int indexNum_;//インデックス数
 	array<int,INDEXNUM> index_;
+	int vertexNum_;
+	std::vector<VERTEX> vertices_;
 
 public:
 	Quad();
@@ -42,8 +45,9 @@ public:
 	HRESULT Initialize();
 	void Draw(XMMATRIX& worldMatrix);
 	void Release();
-	virtual void MakeVerBf();
-	//VERTEX SetVartices();
+	void MakeVerBf();
+	virtual void SetVartices();
+	virtual void SetIndex();
 	void MakeIndBf();
 	void MakeConBf();
 	void SetTexture();

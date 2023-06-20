@@ -1,7 +1,7 @@
 #include "Quad.h"
 
 Quad::Quad() :
-	pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr), pTexture_(nullptr), hr_(E_FAIL), index_{ 0,2,3, 0,1,2/*, 0,4,1*/ }
+	pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr), pTexture_(nullptr), hr_(E_FAIL), vertexNum_(0), indexNum_(0)
 {
 }
 
@@ -67,7 +67,7 @@ void Quad::Draw(XMMATRIX& worldMatrix)
 	
 	SetPipeline();
 
-	Direct3D::pContext_->DrawIndexed(INDEXNUM, 0, 0); //インデックス情報の数は何個数字を入れてるか
+	Direct3D::pContext_->DrawIndexed(index_.size(), 0, 0); //インデックス情報の数は何個数字を入れてるか
 
 }
 
@@ -86,8 +86,26 @@ void Quad::Release()
 
 void Quad::MakeVerBf()
 {
+	
+	SetVartices();
+
+	// 頂点データ用バッファの設定
+	D3D11_BUFFER_DESC bd_vertex;
+	bd_vertex.ByteWidth = sizeof(VERTEX) * vertexNum_;
+	bd_vertex.Usage = D3D11_USAGE_DEFAULT;
+	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd_vertex.CPUAccessFlags = 0;
+	bd_vertex.MiscFlags = 0;
+	bd_vertex.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA data_vertex;
+	data_vertex.pSysMem = vertices_.data();
+	hr_ = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
+}
+
+void Quad::SetVartices()
+{
 	// 頂点情報
-	VERTEX vertices[] =
+	vertices_ =
 	{
 		{XMVectorSet(-1.0f,  1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) /*, XMVectorSet(0.0f,0.0f,-1.0f, 0.0f)*/},	// 四角形の頂点（左上）
 		{XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f),   XMVectorSet(0.25f, 0.0f, 0.0f, 0.0f)/*, XMVectorSet(0.0f,0.0f,-1.0f, 0.0f)*/},	// 四角形の頂点（右上）
@@ -96,34 +114,30 @@ void Quad::MakeVerBf()
 		//{XMVectorSet(0.0f, 2.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },		// 追加した点
 	};
 
-	// 頂点データ用バッファの設定
-	D3D11_BUFFER_DESC bd_vertex;
-	bd_vertex.ByteWidth = sizeof(vertices);
-	bd_vertex.Usage = D3D11_USAGE_DEFAULT;
-	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd_vertex.CPUAccessFlags = 0;
-	bd_vertex.MiscFlags = 0;
-	bd_vertex.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA data_vertex;
-	data_vertex.pSysMem = vertices;
-	hr_ = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
+	vertexNum_ = vertices_.size();
+}
+
+void Quad::SetIndex()
+{
+	//インデックス情報
+	index_ = { 0,2,3, 0,1,2 };
+	indexNum_ = index_.size();
 }
 
 void Quad::MakeIndBf()
 {
-	//インデックス情報
-	//int index[] = { 0,2,3, 0,1,2/*, 0,4,1*/ };
+	SetIndex();
 
 	// インデックスバッファを生成する
 	D3D11_BUFFER_DESC   bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(index_);
+	bd.ByteWidth = sizeof(int) * indexNum_;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = &index_;
+	InitData.pSysMem = index_.data();
 	InitData.SysMemPitch = 0;
 	InitData.SysMemSlicePitch = 0;
 	hr_ = Direct3D::pDevice_->CreateBuffer(&bd, &InitData, &pIndexBuffer_);
