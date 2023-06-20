@@ -121,10 +121,19 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 HRESULT Direct3D::InitShader()
 {
-	HRESULT hr;
 
-	InitShader2D();
-	InitShader3D();
+	if (FAILED(InitShader2D())) {
+		MessageBox(nullptr, "2Dシェーダーの準備に失敗しました", "エラー", MB_OK);
+		return E_FAIL;
+
+	}
+
+
+	if (FAILED(InitShader3D())) {
+		MessageBox(nullptr, "3Dシェーダーの準備に失敗しました", "エラー", MB_OK);
+		return E_FAIL;
+
+	}
 
 	return S_OK;
 }
