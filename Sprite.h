@@ -65,8 +65,9 @@ private:
 	HRESULT CreateIndexBuffer();
 
 	HRESULT CreateConstantBuffer();
+	HRESULT LoadTexture();
 
 	//ドロー関数から呼ばれる関数
-	void PassDatatoCB(DirectX::XMMATRIX& worldMatrix); //コンストラクトバッファ
-	void SetBufferToPripeline();
+	void PassDataToCB(DirectX::XMMATRIX& worldMatrix); //コンストラクトバッファ
+	void SetBufferToPipeline();
 };

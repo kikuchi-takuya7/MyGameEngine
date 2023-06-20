@@ -8,8 +8,8 @@ const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
-Sprite* dice;
-//Quad* dice;
+Sprite* sprite;
+Dice* dice;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -71,10 +71,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
 	Camera::SetPosition(XMFLOAT3(0, 3, -10));
 
-	//dice = new Quad;
-	dice = new Sprite;
+	dice = new Dice;
+	sprite = new Sprite;
 
 	hr = dice->Initialize();
+	if (FAILED(hr)) {
+		PostQuitMessage(0);
+	}
+
+	hr = sprite->Initialize();
 	if (FAILED(hr)) {
 		PostQuitMessage(0);
 	}
@@ -94,7 +99,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	XMMATRIX matS  = XMMatrixIdentity();
 
 	//matR = XMMatrixRotationZ(XMConvertToRadians(-30));
-	matT = XMMatrixTranslation(0, 0, -1);
+	matT = XMMatrixTranslation(0, 2.5f, -1);
 	//matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
 	//matRX = XMMatrixRotationX(XMConvertToRadians(45));
 
@@ -114,21 +119,29 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		//メッセージなし
 		else
 		{
-			static float i = 0;
-			i+=0.05f;
-
-			matRY = XMMatrixRotationY(XMConvertToRadians(i));
-			//matRZ = XMMatrixRotationY(XMConvertToRadians(i));
-
-			//matR = matRX * matRY * matRZ;
-
-			//mat = matT * matR * matS;
+			
 			//ゲームの処理
 			Camera::Update();
 
 			Direct3D::BeginDraw();
 
+			XMMATRIX matSs = XMMatrixScaling(512.0f / 800.0f, 400.0f / 600.0f, 1);
+			XMMATRIX matTs = XMMatrixTranslation(0, -0.25f, 0);
+			XMMATRIX spritemat =matSs * matTs;
+			sprite->Draw(spritemat);
+
+			static float i = 0;
+			i += 0.05f;
+
+			matRY = XMMatrixRotationY(XMConvertToRadians(i));
+			matRZ = XMMatrixRotationY(XMConvertToRadians(i));
+
+			matR = matRX * matRY * matRZ;
+
+			mat = matT * matR * matS;
 			dice->Draw(mat);
+
+			
 
 			Direct3D::EndDraw();
 
@@ -139,6 +152,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	//SAFE_RELEASE(dice);
 	SAFE_DELETE(dice);
+	SAFE_DELETE(sprite);
+
 
 	Direct3D::Release();
 	
