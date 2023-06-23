@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include "Texture.h"
 #include <array>
+#include "Transform.h"
 
 using namespace DirectX;
 using std::vector;
@@ -15,7 +16,7 @@ const UINT64 INDEXNUM = 36;
 struct CONSTANT_BUFFER
 {
 	XMMATRIX	matWVP;
-	XMMATRIX	matW;
+	XMMATRIX	matNormal;
 };
 
 //í∏ì_èÓïÒ
@@ -43,7 +44,7 @@ public:
 	Quad();
 	~Quad();
 	HRESULT Initialize();
-	void Draw(XMMATRIX& worldMatrix);
+	void Draw(Transform& transform);
 	void Release();
 	void MakeVerBf();
 	virtual void SetVartices();
@@ -51,6 +52,6 @@ public:
 	void MakeIndBf();
 	void MakeConBf();
 	void SetTexture();
-	void SetMap(XMMATRIX& worldMatrix);
+	void SetMap(Transform transform);
 	void SetPipeline();
 };

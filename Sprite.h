@@ -20,7 +20,7 @@ class Sprite
 {
 	struct CONSTANT_BUFFER
 	{
-		XMMATRIX	matW;
+		XMMATRIX	matNormal;
 	};
 
 	//頂点情報
@@ -53,7 +53,7 @@ public:
 	~Sprite();
 
 	HRESULT Initialize();
-	void Draw(XMMATRIX& worldMatrix);
+	void Draw(Transform& transform);
 	void Release();
 
 private:
@@ -68,6 +68,6 @@ private:
 	HRESULT LoadTexture();
 
 	//ドロー関数から呼ばれる関数
-	void PassDataToCB(DirectX::XMMATRIX& worldMatrix); //コンストラクトバッファ
+	void PassDataToCB(DirectX::XMMATRIX worldMatrix); //コンストラクトバッファ
 	void SetBufferToPipeline();
 };

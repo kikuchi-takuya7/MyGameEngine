@@ -1,8 +1,10 @@
 //インクルード
 #include <Windows.h>
-#include"Direct3D.h"
-#include"dice.h"
-#include"Sprite.h"
+#include <assert.h>
+#include "Direct3D.h"
+#include "dice.h"
+#include "Sprite.h"
+#include "Fbx.h"
 
 const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
@@ -10,6 +12,7 @@ const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
 Sprite* sprite;
 Quad* dice;
+Fbx* fbx;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -67,12 +70,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	}
 
 	Camera::Initialize();
-
 	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
 	Camera::SetPosition(XMFLOAT3(0, 3, -10));
 
 	dice = new Dice;
 	sprite = new Sprite;
+	fbx = new Fbx;
 
 	hr = dice->Initialize();
 	if (FAILED(hr)) {
@@ -84,24 +87,29 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		PostQuitMessage(0);
 	}
 
-	XMMATRIX mat   = XMMatrixIdentity();
-
-	XMMATRIX matR  = XMMatrixIdentity();
+	hr = fbx->Load("Assets\\oden.fbx");
+	if (FAILED(hr)) {
+		PostQuitMessage(0);
+	}
 	
-	XMMATRIX matRX = XMMatrixIdentity();
+	//Transform mat;
+	//
+	//Transform matR;
+	//
+	//Transform matRX;
 
-	XMMATRIX matRY = XMMatrixIdentity();
+	//Transform matRY;
 
-	XMMATRIX matRZ = XMMatrixIdentity();
+	//Transform matRZ;
 
-	XMMATRIX matT  = XMMatrixIdentity();
+	//Transform matT;
 
-	XMMATRIX matS  = XMMatrixIdentity();
+	//Transform matS;
 
-	//matR = XMMatrixRotationZ(XMConvertToRadians(-30));
-	matT = XMMatrixTranslation(0, 2.5f, -1);
-	//matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
-	//matRX = XMMatrixRotationX(XMConvertToRadians(45));
+	////matR = XMMatrixRotationZ(XMConvertToRadians(-30));
+	//matT.position_.y = 2.5f;
+	////matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
+	////matRX = XMMatrixRotationX(XMConvertToRadians(45));
 
 	//mat = matS * matR * matT;
 	//メッセージループ（何か起きるのを待つ）
@@ -125,24 +133,29 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 			Direct3D::BeginDraw();
 
-			XMMATRIX matSs = XMMatrixScaling(512.0f / 800.0f, 400.0f / 600.0f, 1);
-			XMMATRIX matTs = XMMatrixTranslation(0, -0.25f, 0);
-			XMMATRIX spritemat =matSs * matTs;
-			sprite->Draw(spritemat);
+#if 0
+			Transform spriteTransform;
+			spriteTransform.scale_.x = 512.0f / 800.0f;
+			spriteTransform.scale_.y = 256.0f / 600.0f;
 
-			static float i = 0;
-			i += 0.03f;
+			sprite->Draw(spriteTransform);
 
-			matRY = XMMatrixRotationY(XMConvertToRadians(i));
-			matRZ = XMMatrixRotationY(XMConvertToRadians(i));
+			static float angle = 0;
+			angle += 0.05;
+			//XMMATRIX mat = XMMatrixRotationY(XMConvertToRadians(angle)) * XMMatrixTranslation(0,3,0);
 
-			matR = matRX * matRY * matRZ;
-
-			mat = matT * matR * matS;
-			dice->Draw(mat);
-
+			Transform diceTransform;
+			diceTransform.position_.y = 3.0f;
+			diceTransform.position_.z = 3.0f;
+			diceTransform.rotate_.y = angle;
 			
+			dice->Draw(diceTransform);
 
+#endif
+			Transform fbxTransform;
+			fbxTransform.rotate_.y += 1;
+			fbx->Draw(fbxTransform);
+			
 			Direct3D::EndDraw();
 
 			
@@ -153,6 +166,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	//SAFE_RELEASE(dice);
 	SAFE_DELETE(dice);
 	SAFE_DELETE(sprite);
+	SAFE_DELETE(fbx);
 
 
 	Direct3D::Release();

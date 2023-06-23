@@ -7,7 +7,7 @@ Transform::Transform()
 	matScale_ = XMMatrixIdentity();
 	position_ = XMFLOAT3(0, 0, 0);
 	rotate_ = XMFLOAT3(0, 0, 0);
-	scale_ = XMFLOAT3(0, 0, 0);
+	scale_ = XMFLOAT3(1, 1, 1);
 
 }
 

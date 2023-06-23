@@ -178,7 +178,7 @@ HRESULT Direct3D::InitShader2D()
 
 	//ラスタライザ作成
 	D3D11_RASTERIZER_DESC rdc = {};
-	rdc.CullMode = D3D11_CULL_NONE; //後ろ側は描画しない処理
+	rdc.CullMode = D3D11_CULL_BACK; //後ろ側は描画しない処理
 	rdc.FillMode = D3D11_FILL_SOLID;//ワイヤーフレームだけ作るか塗るか
 	rdc.FrontCounterClockwise = FALSE; //時計回りに頂点を描画するか。FALSEだと時計回りに読み込むする
 	hr = pDevice_->CreateRasterizerState(&rdc, &(shader_Bandle[SHADER_2D].pRasterizerState_));
@@ -193,7 +193,7 @@ HRESULT Direct3D::InitShader2D()
 	//pContext_->IASetInputLayout(shader_Bandle[SHADER_2D].pVertexLayout_);	//頂点インプットレイアウト
 	//pContext_->RSSetState(shader_Bandle[SHADER_2D].pRasterizerState_);		//ラスタライザー
 
-	SetShader(SHADER_3D);
+	//SetShader(SHADER_3D);
 
 	return S_OK;
 }
@@ -254,7 +254,7 @@ HRESULT Direct3D::InitShader3D()
 	//pContext_->IASetInputLayout(shader_Bandle[SHADER_3D].pVertexLayout_);	//頂点インプットレイアウト
 	//pContext_->RSSetState(shader_Bandle[SHADER_3D].pRasterizerState_);		//ラスタライザー
 
-	SetShader(SHADER_3D);
+	//SetShader(SHADER_3D);
 
 	return S_OK;
 }

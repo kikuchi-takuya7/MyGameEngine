@@ -44,7 +44,7 @@ HRESULT Quad::Initialize()
 	return S_OK;
 }
 
-void Quad::Draw(XMMATRIX& worldMatrix)
+void Quad::Draw(Transform& transform)
 {
 
 	////コンスタントバッファに渡す情報
@@ -59,15 +59,16 @@ void Quad::Draw(XMMATRIX& worldMatrix)
 	// 800.0f / 600.0fはアスペクト比　　
 	//0.1f, 100.0fニア(近)クリッピング面.ファー(遠)クリッピング面:世界は平らだから描画距離を決める.手前も残さないとスペースなくて計算できない.ゲームによるが差はなるべく小さくないとZfightingが起きる
 
+	Direct3D::SetShader(SHADER_3D);
 
-
-	SetMap(worldMatrix);
+	transform.Calclation();//トランスフォームを計算
+	SetMap(transform);
 
 	SetTexture();
 	
 	SetPipeline();
 
-	Direct3D::pContext_->DrawIndexed(index_.size(), 0, 0); //インデックス情報の数は何個数字を入れてるか
+	Direct3D::pContext_->DrawIndexed(indexNum_, 0, 0); //インデックス情報の数は何個数字を入れてるか
 
 }
 
@@ -167,13 +168,15 @@ void Quad::SetTexture()
 
 	ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
 	Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+
+	Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 }
 
-void Quad::SetMap(XMMATRIX& worldMatrix)
+void Quad::SetMap(Transform transform)
 {
 	CONSTANT_BUFFER cb;
-	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-	cb.matW = XMMatrixTranspose(worldMatrix);
+	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
@@ -197,7 +200,7 @@ void Quad::SetPipeline()
 	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 
-	Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+	
 
 
 }
