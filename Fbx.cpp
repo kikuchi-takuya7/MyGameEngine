@@ -8,7 +8,7 @@ Fbx::Fbx(): pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nu
 
 Fbx::~Fbx()
 {
-	SAFE_RELEASE(pTexture_);
+	//SAFE_RELEASE(pTexture_);
 	SAFE_DELETE(pTexture_);
 
 	SAFE_RELEASE(pConstantBuffer_);
