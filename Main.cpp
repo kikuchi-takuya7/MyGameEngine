@@ -153,7 +153,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 #endif
 			static Transform fbxTransform;
-			fbxTransform.rotate_.y += 1;
+			fbxTransform.rotate_.y += 0.01f;
+			fbxTransform.position_.y = -1;
 			fbx->Draw(fbxTransform);
 			
 			Direct3D::EndDraw();
