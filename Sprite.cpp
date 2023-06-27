@@ -32,6 +32,8 @@ HRESULT Sprite::Initialize()
 
 void Sprite::Draw(Transform& transform)
 {
+	Direct3D::SetShader(SHADER_2D);
+
 	transform.Calclation();//トランスフォームを計算
 	PassDataToCB(transform.GetWorldMatrix());
 	SetBufferToPipeline();

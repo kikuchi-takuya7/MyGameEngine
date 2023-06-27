@@ -152,7 +152,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			dice->Draw(diceTransform);
 
 #endif
-			Transform fbxTransform;
+			static Transform fbxTransform;
 			fbxTransform.rotate_.y += 1;
 			fbx->Draw(fbxTransform);
 			

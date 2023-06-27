@@ -2,14 +2,14 @@
 
 
 
-Fbx::Fbx(): pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr), pTexture_(nullptr), vertexCount_(0),polygonCount_(0)
+Fbx::Fbx(): pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr), vertexCount_(0),polygonCount_(0)
 {
 }
 
 Fbx::~Fbx()
 {
 	//SAFE_RELEASE(pTexture_);
-	SAFE_DELETE(pTexture_);
+	//SAFE_DELETE(pTexture_);
 
 	SAFE_RELEASE(pConstantBuffer_);
 	SAFE_RELEASE(pIndexBuffer_);
@@ -41,10 +41,13 @@ HRESULT Fbx::Load(std::string fileName)
 
 	vertexCount_ = mesh->GetControlPointsCount();	//頂点の数
 	polygonCount_ = mesh->GetPolygonCount();	//ポリゴンの数
+	materialCount_ = pNode->GetMaterialCount(); //マテリアルの数　一つのノード（子供）の中から情報をとってくる
 
 	InitVertex(mesh);		//頂点バッファ準
 	InitIndex(mesh);
 	InitConstantBuffer();	//コンスタントバッファ準備
+	InitMaterial(pNode); //マテリアル準備
+
 	
 	//マネージャ解放
 	pFbxManager->Destroy();
@@ -115,7 +118,7 @@ void Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 	// インデックスバッファを生成する
 	D3D11_BUFFER_DESC   bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(int) * polygonCount_ * 3;
+	bd.ByteWidth = sizeof(int) * count;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
@@ -156,8 +159,61 @@ void Fbx::InitConstantBuffer()
 	}
 }
 
+void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
+{
+	pMaterialList_ = new MATERIAL[materialCount_];
+
+	for (int i = 0; i < materialCount_; i++)
+	{
+		//i番目のマテリアル情報を取得
+		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
+
+		//テクスチャ情報
+		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse); //mayaでテクスチャ表示させるボタンあるやん？あの情報らしいで
+
+		//テクスチャの数数
+		int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>(); //テクスチャ貼ってあれば１出なければ０
+
+		//テクスチャあり
+		if (fileTextureCount)
+		{
+
+			FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
+			const char* textureFilePath = textureInfo->GetRelativeFileName();
+
+			//ファイル名+拡張だけにする
+			char name[_MAX_FNAME];	//ファイル名
+			char ext[_MAX_EXT];	//拡張子
+			_splitpath_s(textureFilePath, nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT); //今回ドライブとディレクトリ名はいらないので、ファイルの名前と拡張子だけ
+			wsprintf(name, "%s%s", name, ext);
+
+			//ファイルからテクスチャ作成
+			pMaterialList_[i].pTexture = new Texture;
+			pMaterialList_[i].pTexture->Load(name);
+
+			//ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture->GetSampler();
+			//Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
+
+			//ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
+			//Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+
+			//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+
+		}
+
+		//テクスチャ無し
+		else
+		{
+			pMaterialList_[i].pTexture = nullptr;
+		}
+	}
+}
+
 void Fbx::Draw(Transform& transform)
 {
+
+	Direct3D::SetShader(SHADER_TYPE::SHADER_3D);
+
 	transform.Calclation();//トランスフォームを計算
 	SetMap(transform);
 
@@ -184,13 +240,13 @@ void Fbx::SetMap(Transform& transform)
 
 void Fbx::SetTexture()
 {
-	ID3D11SamplerState* pSampler = pTexture_->GetSampler();
-	Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
+	//ID3D11SamplerState* pSampler = pTexture_->GetSampler();
+	//Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
 
-	ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
-	Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+	//ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
+	//Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 
-	Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+	//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 }
 
 
@@ -214,8 +270,8 @@ void Fbx::SetPipeline()
 
 void Fbx::Release()
 {
-	SAFE_RELEASE(pTexture_);
-	SAFE_DELETE(pTexture_);
+	//SAFE_RELEASE(pTexture_);
+	//SAFE_DELETE(pTexture_);
 
 	SAFE_RELEASE(pConstantBuffer_);
 	SAFE_RELEASE(pIndexBuffer_);
