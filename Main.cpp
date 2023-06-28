@@ -153,7 +153,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 #endif
 			static Transform fbxTransform;
-			fbxTransform.rotate_.y += 0.01f;
+			fbxTransform.rotate_.y += 0.05f;
 			fbxTransform.position_.y = -1;
 			fbx->Draw(fbxTransform);
 			
