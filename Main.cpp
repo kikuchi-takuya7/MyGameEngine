@@ -5,6 +5,7 @@
 #include "dice.h"
 #include "Sprite.h"
 #include "Fbx.h"
+#include "Input.h"
 
 const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
@@ -63,12 +64,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	//ウィンドウを表示
 	ShowWindow(hWnd, nCmdShow);
+	
+	//Direct3Dの初期化
 	HRESULT hr;
 	hr = Direct3D::Initialize(winW, winH, hWnd);
 	if (FAILED(hr)) {
 		PostQuitMessage(0);
 	}
 
+	//DirectInputの初期化
+	Input::Initialize(hWnd);
+	/*if (FAILED(hr)) {
+		PostQuitMessage(0);
+	}*/
 	Camera::Initialize();
 	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
 	Camera::SetPosition(XMFLOAT3(0, 3, -10));
@@ -91,28 +99,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	if (FAILED(hr)) {
 		PostQuitMessage(0);
 	}
-	
-	//Transform mat;
-	//
-	//Transform matR;
-	//
-	//Transform matRX;
 
-	//Transform matRY;
-
-	//Transform matRZ;
-
-	//Transform matT;
-
-	//Transform matS;
-
-	////matR = XMMatrixRotationZ(XMConvertToRadians(-30));
-	//matT.position_.y = 2.5f;
-	////matS = XMMatrixScaling(1.0f, 2.0f, 1.0f);
-	////matRX = XMMatrixRotationX(XMConvertToRadians(45));
-
-	//mat = matS * matR * matT;
-	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
 	while (msg.message != WM_QUIT)
@@ -130,8 +117,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			
 			//ゲームの処理
 			Camera::Update();
-
 			Direct3D::BeginDraw();
+			Input::Update();
+
+			if (Input::IsKey(DIK_ESCAPE))
+			{
+				PostQuitMessage(0);
+			}
 
 #if 0
 			Transform spriteTransform;
@@ -156,11 +148,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			fbxTransform.rotate_.y += 0.05f;
 			fbxTransform.position_.y = -1;
 			fbx->Draw(fbxTransform);
+
 			
+
 			Direct3D::EndDraw();
-
-			
-
 		}
 	}
 
@@ -169,9 +160,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	SAFE_DELETE(sprite);
 	SAFE_DELETE(fbx);
 
-
 	Direct3D::Release();
-	
+	Input::Release();
+
 	return 0;
 }
 

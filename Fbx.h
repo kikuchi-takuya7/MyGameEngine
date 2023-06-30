@@ -21,6 +21,7 @@ class Fbx
 	struct MATERIAL
 	{
 		Texture* pTexture;
+		XMFLOAT4	diffuse;
 		
 	};
 
@@ -28,6 +29,8 @@ class Fbx
 	{
 		XMMATRIX	matWVP;
 		XMMATRIX	matNormal;
+		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
+		int		isTexture;		// テクスチャ貼ってあるかどうか
 	};
 
 	struct VERTEX
