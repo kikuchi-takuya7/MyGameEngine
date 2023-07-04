@@ -120,10 +120,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			Direct3D::BeginDraw();
 			Input::Update();
 
-			if (Input::IsKey(DIK_ESCAPE))
+			if (Input::IsKeyDown(DIK_ESCAPE))
 			{
-				PostQuitMessage(0);
+				static int cnt = 0;
+				cnt++;
+				if (cnt >= 3) {
+					PostQuitMessage(0);
+				}
 			}
+			
 
 #if 0
 			Transform spriteTransform;
@@ -147,8 +152,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			static Transform fbxTransform;
 			fbxTransform.rotate_.y += 0.05f;
 			fbxTransform.position_.y = -1;
-			fbx->Draw(fbxTransform);
-
+			
+			XMVECTOR v = Input::GetMousePosition();
+			XMFLOAT3 f;
+			XMStoreFloat3(&f, v);
+			if (f.x <= 300) {
+				fbx->Draw(fbxTransform);
+			}
+			
 			
 
 			Direct3D::EndDraw();
@@ -175,6 +186,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 		PostQuitMessage(0);  //プログラム終了
 		return 0;
+
+	case WM_MOUSEMOVE://マウスが動いたら
+		Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));//この時、ウィンドウプロシージャの引数lParamにマウスカーソルの位置が入る。
+		return 0;												//（下位ビットにX座標、上位ビットにY座標）
 
 	case WM_DESTROY://ウィンドウが閉じられたら
 		PostQuitMessage(0);  //プログラム終了

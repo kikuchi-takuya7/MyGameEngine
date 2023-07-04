@@ -1,11 +1,14 @@
 #include "Input.h"
 
+
 namespace Input
 {
 
 	LPDIRECTINPUT8   pDInput = nullptr; //内部でポインタになってるからnullptr
 	LPDIRECTINPUTDEVICE8 pKeyDevice = nullptr; //キーボードにアクセスするためのやつ
 	BYTE keyState[256] = { 0 }; //unsgind charを書くのがめんどくさかったらBYTEキーの数は一般的に109なので十分
+	BYTE prevKeyState[256];    //前フレームでの各キーの状態
+	XMVECTOR mousePosition;
 
 	void Initialize(HWND hWnd)
 	{
@@ -17,17 +20,49 @@ namespace Input
 
 	void Update()
 	{
+		//まとまったデータを丸っとコピーできる関数。割と使うかも
+		memcpy(prevKeyState, keyState, sizeof(BYTE)*0x80);
+
 		pKeyDevice->Acquire();
 		pKeyDevice->GetDeviceState(sizeof(keyState), &keyState); //その瞬間のキーボードの状態を入手する
 	}
 
 	bool IsKey(int keyCode)
 	{
-		if (keyState[DIK_ESCAPE] | 0)
+		if (keyState[keyCode] & 0x80) //二進数で128。キーボードの数より多く余裕を持った7bit
 		{
 			return true;
 		}
 		return false;
+	}
+
+	bool IsKeyDown(int keyCode)
+	{
+		if (prevKeyState[keyCode] ^ keyState[keyCode] && keyState[keyCode] & 0x80)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	bool IsKeyUp(int keyCode)
+	{
+		if (prevKeyState[keyCode] ^ keyState[keyCode] && prevKeyState[keyCode] & 0x80)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	XMVECTOR GetMousePosition()
+	{
+		return mousePosition;
+	}
+
+
+	void SetMousePosition(int x, int y)
+	{
+		mousePosition = XMVectorSet((float)x, (float)y, 0, 0);
 	}
 
 	void Release()
