@@ -38,7 +38,7 @@ namespace Input
 
 	bool IsKeyDown(int keyCode)
 	{
-		if (prevKeyState[keyCode] ^ keyState[keyCode] && keyState[keyCode] & 0x80)
+		if (prevKeyState[keyCode] ^ keyState[keyCode] && keyState[keyCode] & 0x80)//(Iskey(keyCode) && !(prevKeyState[keyCode] & 0x80))‚Á‚Ä‚Ì‚à‚ ‚è
 		{
 			return true;
 		}
