@@ -152,13 +152,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			static Transform fbxTransform;
 			fbxTransform.rotate_.y += 0.05f;
 			fbxTransform.position_.y = -1;
+
+			if (Input::IsKey(DIK_LEFT)) {
+				fbxTransform.position_.x -= 0.001f;
+			} else if (Input::IsKey(DIK_RIGHT)) {
+				fbxTransform.position_.x += 0.001;
+			}
 			
 			XMVECTOR v = Input::GetMousePosition();
 			XMFLOAT3 f;
 			XMStoreFloat3(&f, v);
-			if (f.x <= 300) {
-				fbx->Draw(fbxTransform);
-			}
+			fbxTransform.position_.z = 0.0f;
+			fbxTransform.position_.x = f.x - 400;
+			fbxTransform.position_.y = -f.y - 400;
+			fbx->Draw(fbxTransform);
+			
 			
 			
 

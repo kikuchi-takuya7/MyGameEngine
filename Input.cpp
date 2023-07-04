@@ -21,7 +21,7 @@ namespace Input
 	void Update()
 	{
 		//まとまったデータを丸っとコピーできる関数。割と使うかも
-		memcpy(prevKeyState, keyState, sizeof(BYTE)*0x80);
+		memcpy(prevKeyState, keyState, sizeof(BYTE)*256);
 
 		pKeyDevice->Acquire();
 		pKeyDevice->GetDeviceState(sizeof(keyState), &keyState); //その瞬間のキーボードの状態を入手する
