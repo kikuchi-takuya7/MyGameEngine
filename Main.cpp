@@ -1,19 +1,16 @@
 //インクルード
 #include <Windows.h>
-#include <assert.h>
-#include "Direct3D.h"
-#include "dice.h"
-#include "Sprite.h"
-#include "Fbx.h"
-#include "Input.h"
+#include "Engine/Direct3D.h"
+#include "Engine/Input.h"
+#include "Engine/Camera.h"
+#include "Engine/RootJob.h"
 
 const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
-Sprite* sprite;
-Quad* dice;
-Fbx* fbx;
+RootJob* pRootJob = new RootJob;
+
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -72,6 +69,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		PostQuitMessage(0);
 	}
 
+	pRootJob->Initialize();
+
 	//DirectInputの初期化
 	Input::Initialize(hWnd);
 	/*if (FAILED(hr)) {
@@ -80,25 +79,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Camera::Initialize();
 	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
 	Camera::SetPosition(XMFLOAT3(0, 3, -10));
-
-	dice = new Dice;
-	sprite = new Sprite;
-	fbx = new Fbx;
-
-	hr = dice->Initialize();
-	if (FAILED(hr)) {
-		PostQuitMessage(0);
-	}
-
-	hr = sprite->Initialize();
-	if (FAILED(hr)) {
-		PostQuitMessage(0);
-	}
-
-	hr = fbx->Load("Assets\\oden.fbx");
-	if (FAILED(hr)) {
-		PostQuitMessage(0);
-	}
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -116,63 +96,24 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		{
 			
 			//ゲームの処理
+			//カメラの更新
 			Camera::Update();
-			Direct3D::BeginDraw();
+
+			//入力の処理
 			Input::Update();
+			pRootJob->Update();
 
-			if (Input::IsKeyDown(DIK_ESCAPE))
-			{
-				static int cnt = 0;
-				cnt++;
-				if (cnt >= 3) {
-					PostQuitMessage(0);
-				}
-			}
-			
+			//描画
+			Direct3D::BeginDraw();
 
-#if 0
-			Transform spriteTransform;
-			spriteTransform.scale_.x = 512.0f / 800.0f;
-			spriteTransform.scale_.y = 256.0f / 600.0f;
-
-			sprite->Draw(spriteTransform);
-
-			static float angle = 0;
-			angle += 0.05;
-			//XMMATRIX mat = XMMatrixRotationY(XMConvertToRadians(angle)) * XMMatrixTranslation(0,3,0);
-
-			Transform diceTransform;
-			diceTransform.position_.y = 3.0f;
-			diceTransform.position_.z = 3.0f;
-			diceTransform.rotate_.y = angle;
-			
-			dice->Draw(diceTransform);
-
-#endif
-			static Transform fbxTransform;
-			fbxTransform.rotate_.y += 0.05f;
-			fbxTransform.position_.y = -1;
-			
-			XMVECTOR v = Input::GetMousePosition();
-			XMFLOAT3 f;
-			XMStoreFloat3(&f, v);
-			//fbxTransform.position_.z = 0.0f;
-			//fbxTransform.position_.x = f.x - 400;
-			//fbxTransform.position_.y = -f.y - 400;
-			fbx->Draw(fbxTransform);
-			
-			
-			
+			//ルートジョブからすべてのオブジェクトのドローを呼ぶ
+			pRootJob->Draw();
 
 			Direct3D::EndDraw();
 		}
 	}
 
-	//SAFE_RELEASE(dice);
-	SAFE_DELETE(dice);
-	SAFE_DELETE(sprite);
-	SAFE_DELETE(fbx);
-
+	pRootJob->Release();
 	Direct3D::Release();
 	Input::Release();
 
