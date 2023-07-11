@@ -1,11 +1,11 @@
 #include "GameObject.h"
 
-GameObject::GameObject() :IsDead_(false)
+GameObject::GameObject() :IsDead_(false),pParent_(nullptr)
 {
 	
 }
 
-GameObject::GameObject(GameObject* parent, const std::string& name):IsDead_(false)
+GameObject::GameObject(GameObject* parent, const std::string& name) :IsDead_(false), pParent_(nullptr)
 {
 
 	pParent_ = parent;
@@ -27,6 +27,11 @@ void GameObject::DrawSub()
 void GameObject::UpdateSub()
 {
 
+	Update();
+	for (auto itr = childList_.begin(); itr != childList_.end(); itr++) {
+		(*itr)->UpdateSub();
+	}
+
 	for (auto itr = childList_.begin(); itr != childList_.end();) {
 		if ((*itr)->IsDead_) {
 			(*itr)->ReleaseSub();
@@ -36,11 +41,6 @@ void GameObject::UpdateSub()
 		else {
 			itr++;
 		}
-	}
-
-	Update();
-	for (auto itr = childList_.begin(); itr != childList_.end(); itr++) {
-		(*itr)->UpdateSub();
 	}
 }
 

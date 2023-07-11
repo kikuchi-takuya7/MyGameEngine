@@ -8,12 +8,15 @@ using std::string;
 using std::list;
 class GameObject
 {
+private:
+	bool				IsDead_;
+
 protected:
 	list<GameObject*>	childList_;
 	Transform			transform_;
 	GameObject*			pParent_;
 	string				objectName_;
-	bool				IsDead_;
+	
 
 public:
 	GameObject();
