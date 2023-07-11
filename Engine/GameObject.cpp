@@ -31,7 +31,7 @@ void GameObject::UpdateSub()
 		if ((*itr)->IsDead_) {
 			(*itr)->ReleaseSub();
 			delete* itr;
-			childList_.erase(itr);
+			itr = childList_.erase(itr);
 		}
 		else {
 			itr++;

@@ -150,6 +150,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayScene.cpp" />
+    <ClCompile Include="Sub.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple2D.hlsl">
@@ -189,6 +190,7 @@
     <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayScene.h" />
+    <ClInclude Include="Sub.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

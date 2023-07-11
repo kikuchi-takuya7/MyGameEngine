@@ -13,13 +13,13 @@ PlayScene::PlayScene(GameObject* parent)
 void PlayScene::Initialize()
 {
 
-	Instantiate<Player>(this);
+	GameObject* pPlayer = Instantiate<Player>(this);
 }
 
 //XV
 void PlayScene::Update()
 {
-	
+	transform_.rotate_.y++;
 }
 
 //•`‰æ
