@@ -1,9 +1,12 @@
 //インクルード
 #include <Windows.h>
+#include <stdlib.h>
 #include "Engine/Direct3D.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
 #include "Engine/RootJob.h"
+
+#pragma comment(lib, "winmm.lib")
 
 const char* WIN_CLASS_NAME = "SanpleGame";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
@@ -94,28 +97,53 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		//メッセージなし
 		else
 		{
-			
+			timeBeginPeriod(1); //ここの間はmm秒単位で計算するようになる
+
+			static DWORD countFps = 0;
+
+			static DWORD startTime = timeGetTime();//このプログラムが起動したタイミングのwindows起動時間
+			DWORD nowTime = timeGetTime();//Windowsが起動してからの時間だから、このパソコン自体の起動時間が出てくる
+			static DWORD lastUpdateTime = nowTime;
+
+			if (nowTime - startTime >= 1000)
+			{
+				char str[16];
+				wsprintf(str, "%u", countFps);
+				SetWindowText(hWnd, str);
+				countFps = 0;
+				startTime = nowTime;
+			}
+
+			if ((nowTime - lastUpdateTime) * 60 <= 1000.0f)//前回の更新から1/60秒立ってないなら休み
+			{
+				continue;
+			}
+			lastUpdateTime = nowTime;
+
+			countFps++;
+			timeEndPeriod(1);
+
 			//ゲームの処理
 			//カメラの更新
 			Camera::Update();
 
 			//入力の処理
 			Input::Update();
-			pRootJob->Update();
+			pRootJob->UpdateSub();
 
 			//描画
 			Direct3D::BeginDraw();
 
 			//ルートジョブからすべてのオブジェクトのドローを呼ぶ
-			pRootJob->Draw();
+			pRootJob->DrawSub();
 
 			Direct3D::EndDraw();
 		}
 	}
 
-	pRootJob->Release();
-	Direct3D::Release();
+	pRootJob->ReleaseSub();
 	Input::Release();
+	Direct3D::Release();
 
 	return 0;
 }

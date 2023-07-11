@@ -9,10 +9,11 @@ using std::list;
 class GameObject
 {
 protected:
-	list<GameObject*>  childList_;
-	Transform				transform_;
-	GameObject*				pParent_;
-	string					objectName_;
+	list<GameObject*>	childList_;
+	Transform			transform_;
+	GameObject*			pParent_;
+	string				objectName_;
+	bool				IsDead_;
 
 public:
 	GameObject();
@@ -23,4 +24,17 @@ public:
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
 	virtual void Release() = 0;
+	void DrawSub();
+	void UpdateSub();
+	void ReleaseSub();
+	void KillMe();
+
+	template<class T>
+	void Instantiate(GameObject* parent)
+	{
+		T* P;
+		P = new T(parent);
+		P->Initialize();
+		parent->childList_.push_back(P);
+	}
 };

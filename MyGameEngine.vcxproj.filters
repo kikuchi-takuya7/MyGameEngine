@@ -54,6 +54,7 @@
       <Filter>ソースファイル\Engine</Filter>
     </ClCompile>
     <ClCompile Include="PlayScene.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl" />
@@ -94,6 +95,9 @@
       <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="PlayScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
