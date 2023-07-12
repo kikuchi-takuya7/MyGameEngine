@@ -5,11 +5,14 @@ GameObject::GameObject() :IsDead_(false),pParent_(nullptr)
 	
 }
 
-GameObject::GameObject(GameObject* parent, const std::string& name) :IsDead_(false), pParent_(nullptr)
+GameObject::GameObject(GameObject* parent, const std::string& name) :IsDead_(false),pParent_(parent),objectName_(name)
 {
 
-	pParent_ = parent;
-	objectName_ = name;
+	//pParent_ = parent;
+	//objectName_ = name;
+	if (pParent_ != nullptr) {
+		this->transform_.pParent_ = &(parent->transform_);
+	}
 }
 
 GameObject::~GameObject()
@@ -35,7 +38,7 @@ void GameObject::UpdateSub()
 	for (auto itr = childList_.begin(); itr != childList_.end();) {
 		if ((*itr)->IsDead_) {
 			(*itr)->ReleaseSub();
-			delete* itr;
+			SAFE_DELETE(*itr);
 			itr = childList_.erase(itr);
 		}
 		else {
@@ -46,10 +49,10 @@ void GameObject::UpdateSub()
 
 void GameObject::ReleaseSub()
 {
-	Release();
 	for (auto itr = childList_.begin(); itr != childList_.end(); itr++) {
 		(*itr)->ReleaseSub();
 	}
+	Release();
 }
 
 void GameObject::KillMe()

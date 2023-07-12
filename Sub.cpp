@@ -17,20 +17,18 @@ void Sub::Initialize()
 {
     pFbx_ = new Fbx;
 	pFbx_->Load("Assets/oden.fbx");
-	this->transform_.position_.x = -3.0f;
-	this->transform_.position_.y = 0.0f;
-	this->transform_.position_.z = 0.0f;
 	transform_.scale_ = XMFLOAT3(0.5f,0.5f,0.5f);
 }
 
 //XV
 void Sub::Update()
 {
-	//transform_.rotate_.y--;
+	transform_.rotate_.y--;
+	transform_.rotate_.z++;
 	static int i = 0;
 	i++;
 	if (i >= 60) {
-	//	KillMe();
+		KillMe();
 	}
 }
 

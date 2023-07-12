@@ -6,6 +6,10 @@
 
 using std::string;
 using std::list;
+
+#define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
+#define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
+
 class GameObject
 {
 private:
@@ -31,6 +35,22 @@ public:
 	void UpdateSub();
 	void ReleaseSub();
 	void KillMe();
+
+	void SetTransform(Transform t) { transform_ = t; }
+	Transform GetTransform() { return transform_; }
+
+	void SetPosition(XMFLOAT3 p) { transform_.position_ = p; }
+	void SetPosition(float x, float y, float z) { SetPosition(XMFLOAT3(x,y,z)); }
+	void SetScale(XMFLOAT3 s) { transform_.scale_ = s; }
+	void SetScale(float x, float y, float z) { SetScale(XMFLOAT3(x, y, z)); }
+	void SetRotate(XMFLOAT3 r) { transform_.rotate_ = r; }
+	void SetRotate(float x, float y, float z) { SetRotate(XMFLOAT3(x, y, z)); }
+	void SetRotateX(float x) { SetRotate(x, transform_.rotate_.y, transform_.rotate_.z); }
+	void SetRotateY(float y) { SetRotate(transform_.rotate_.x, y, transform_.rotate_.z); }
+	void SetRotateZ(float z) { SetRotate(transform_.rotate_.x, transform_.rotate_.y, z); }
+	XMFLOAT3 GetPosition() { return transform_.position_; }
+	XMFLOAT3 GetRotate() { return transform_.rotate_; }
+	XMFLOAT3 GetScale() { return transform_.scale_; }
 
 	template<class T>
 	GameObject* Instantiate(GameObject* parent)

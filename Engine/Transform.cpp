@@ -9,6 +9,7 @@ Transform::Transform()
 	rotate_ = XMFLOAT3(0, 0, 0);
 	scale_ = XMFLOAT3(1, 1, 1);
 
+
 }
 
 Transform::~Transform()
@@ -33,7 +34,14 @@ void Transform::Calclation()
 
 XMMATRIX Transform::GetWorldMatrix()
 {
-	return matScale_ * matRotate_ * matTranslate_;
+	if (pParent_ != nullptr) { //pParent_‚ªnullptr‚¶‚á‚È‚¯‚ê‚ÎB’†g‚ª‚ ‚ê‚Î
+		//e‚ª‚ ‚Á‚½‚ç
+		return matScale_ * matRotate_ * matTranslate_* pParent_->GetWorldMatrix();
+	}
+	else {
+		return matScale_ * matRotate_ * matTranslate_;
+	}
+	
 }
 
 XMMATRIX Transform::GetNormalMatrix()
