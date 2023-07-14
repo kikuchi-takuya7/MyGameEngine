@@ -11,34 +11,18 @@ using std::string;
 namespace Model{
     struct ModelData
     {
-        vector<Fbx*> pFbx_;
-        vector<Transform> pTransform_;
-        vector<string> pString_;
+        Fbx* pFbx_;
+        Transform transform_;
+        string fileName_;
     };
+
+    int Load(std::string _fileName);
+
+    void SetTransform(int _hModel, Transform _t);
+
+    void Draw(int _hModel);
+
+    void Release();
+
+    void AllRelease();
 }
-
-//◆◆◆を管理するクラス
-class Model : public GameObject
-{
-    int hModel_;
-public:
-    //コンストラクタ
-    Model(GameObject* parent);
-
-    //デストラクタ
-    ~Model();
-
-    //初期化
-    void Initialize() override;
-
-    //更新
-    void Update() override;
-
-    //描画
-    void Draw() override;
-
-    //開放
-    void Release() override;
-
-    int Load(string fileName);
-};
