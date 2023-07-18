@@ -57,6 +57,10 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sub.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="Engine\SceneManager.cpp">
+      <Filter>ソースファイル\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl" />
@@ -107,6 +111,12 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SceneManager.h">
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

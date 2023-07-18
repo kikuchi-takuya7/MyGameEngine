@@ -73,16 +73,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		PostQuitMessage(0);
 	}
 
-	pRootJob->Initialize();
+	Camera::Initialize();
+	Camera::SetTarget(XMFLOAT3(0, 0, 0));
+	Camera::SetPosition(XMFLOAT3(0, 3, -10));
 
 	//DirectInput‚Ì‰Šú‰»
 	Input::Initialize(hWnd);
 	/*if (FAILED(hr)) {
 		PostQuitMessage(0);
 	}*/
-	Camera::Initialize();
-	Camera::SetTarget(XMFLOAT3 (0, 0, 0));
-	Camera::SetPosition(XMFLOAT3(0, 3, -10));
+	
+	pRootJob = new RootJob(nullptr);//‚±‚êˆÈãã‚Ìe‚É‚Í‰½‚à‚È‚¢‚Á‚Ä‚±‚Æ
+	pRootJob->Initialize();
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));

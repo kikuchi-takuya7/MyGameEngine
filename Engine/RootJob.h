@@ -6,7 +6,7 @@ class RootJob :
 {
 public:
     RootJob();
-    RootJob(GameObject* parent, const string& name);
+    RootJob(GameObject* parent);
     ~RootJob();
 
     void Initialize() override;
