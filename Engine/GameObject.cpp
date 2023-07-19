@@ -68,9 +68,9 @@ GameObject* GameObject::FindChildObject(string _objName)
 		return(this); //自分が_objNameのオブジェクトだった
 	}
 	else {
-		for (auto itr = childList_.begin(); itr != childList_.end(); itr++) { //こっちはポインタアスタリスクが必要
-		//for(auto itr:childList_){ //こっちはアドレスそのまま行くからおっけ
-			GameObject* obj = (*itr)->FindChildObject(_objName);
+		//for (auto itr = childList_.begin(); itr != childList_.end(); itr++) { //こっちはポインタアスタリスクが必要
+		for(auto itr:childList_){ //こっちはアドレスそのまま行くからおっけ
+			GameObject* obj = itr->FindChildObject(_objName);
 			if (obj != nullptr)
 				return obj;
 		}
