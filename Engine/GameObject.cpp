@@ -36,6 +36,8 @@ void GameObject::UpdateSub()
 	}
 
 	for (auto itr = childList_.begin(); itr != childList_.end();) {
+
+
 		if ((*itr)->IsDead_) {
 			(*itr)->ReleaseSub();
 			SAFE_DELETE(*itr);
@@ -58,4 +60,38 @@ void GameObject::ReleaseSub()
 void GameObject::KillMe()
 {
 	IsDead_ = true;
+}
+
+GameObject* GameObject::FindChildObject(string _objName)
+{
+	if (_objName == this->objectName_) {
+		return(this); //自分が_objNameのオブジェクトだった
+	}
+	else {
+		for (auto itr = childList_.begin(); itr != childList_.end(); itr++) { //こっちはポインタアスタリスクが必要
+		//for(auto itr:childList_){ //こっちはアドレスそのまま行くからおっけ
+			GameObject* obj = (*itr)->FindChildObject(_objName);
+			if (obj != nullptr)
+				return obj;
+		}
+	}
+
+	return nullptr;
+}
+
+/// <summary>
+/// 再起呼び出しでRootJobを探してそのアドレスを返す関数
+/// </summary>
+/// <returns>RootJobのアドレス</returns>
+GameObject* GameObject::GetRootJob()
+{
+	if(pParent_ == nullptr)
+		return this;
+	
+	return pParent_->GetRootJob();
+}
+
+GameObject* GameObject::FindObject(string _objName)
+{
+	return GetRootJob()->FindChildObject(_objName);
 }

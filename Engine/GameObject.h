@@ -36,6 +36,10 @@ public:
 	void ReleaseSub();
 	void KillMe();
 
+	GameObject* FindChildObject(string _objName);
+	GameObject* GetRootJob();
+	GameObject* FindObject(string _objName);
+
 	void SetTransform(Transform t) { transform_ = t; }
 	Transform GetTransform() { return transform_; }
 

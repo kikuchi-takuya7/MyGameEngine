@@ -1,4 +1,7 @@
 #include "TestScene.h"
+#include "Engine/Input.h"
+#include "Engine/SceneManager.h"
+
 
 //コンストラクタ
 TestScene::TestScene(GameObject* parent)
@@ -21,6 +24,11 @@ void TestScene::Initialize()
 //更新
 void TestScene::Update()
 {
+    if (Input::IsKeyDown(DIK_RETURN)) {
+
+        SceneManager* pSceneManager = (SceneManager* )FindObject("SceneManager");
+        pSceneManager->ChangeScene(SCENE_ID_PLAY);
+    }
 }
 
 //描画

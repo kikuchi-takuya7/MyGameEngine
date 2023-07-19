@@ -39,7 +39,7 @@ void Player::Update()
 	static int i = 0;
 	i++;
 	if (i >= 120) {
-		KillMe();
+		//KillMe();
 	}
 }
 

@@ -67,6 +67,10 @@ void SceneManager::Release()
 {
 }
 
+/// <summary>
+/// 指定したシーンをnextSceneIdに設定する（次のシーンをアプデする）
+/// </summary>
+/// <param name="_next"></param>
 void SceneManager::ChangeScene(SCENE_ID _next)
 {
     nextSceneID_ = _next;
