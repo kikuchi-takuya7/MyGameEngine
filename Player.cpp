@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "Sub.h"
 #include "Engine/Fbx.h"
+#include "Engine/SphereCollider.h"
+#include "Engine/Input.h"
 
 //コンストラクタ
 Player::Player(GameObject* parent)
@@ -29,12 +31,19 @@ void Player::Initialize()
 	pSub2->SetTransform(pSub->GetTransform());
 	pSub2->SetPosition(XMFLOAT3(2, 1, 0));
 	//pSub2->SetScale(XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+	SphereCollider* col = new SphereCollider(1.0f);
+	AddCollider(col);
 }
 
 //更新
 void Player::Update()
 {
 	transform_.rotate_.y += 1;
+
+	if (Input::IsKey(DIK_W)) {
+		transform_.position_.z++;
+	}
 
 	static int i = 0;
 	i++;

@@ -3,7 +3,7 @@
 #include "Engine/Fbx.h"
 #include "Engine/SceneManager.h"
 #include "Engine/Input.h"
-
+#include "Enemy.h"
 
 //コンストラクタ
 PlayScene::PlayScene(GameObject* parent)
@@ -15,7 +15,9 @@ PlayScene::PlayScene(GameObject* parent)
 void PlayScene::Initialize()
 {
 
-	GameObject* pPlayer = Instantiate<Player>(this);
+	//GameObject* pPlayer = Instantiate<Player>(this);
+	Instantiate<Player>(this);
+	Instantiate<Enemy>(this);
 }
 
 //更新
@@ -23,11 +25,11 @@ void PlayScene::Update()
 {
 	transform_.rotate_.y++;
 
-	if (Input::IsKeyDown(DIK_RETURN)) {
+	//if (Input::IsKeyDown(DIK_RETURN)) {
 
-		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
-		pSceneManager->ChangeScene(SCENE_ID_TEST);
-	}
+		//SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
+		//pSceneManager->ChangeScene(SCENE_ID_TEST);
+	//}
 
 }
 

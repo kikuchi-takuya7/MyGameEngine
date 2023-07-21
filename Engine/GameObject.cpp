@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "SphereCollider.h"
 
 GameObject::GameObject() :IsDead_(false),pParent_(nullptr)
 {
@@ -31,6 +32,8 @@ void GameObject::UpdateSub()
 {
 
 	Update();
+
+	RoundRobin(GetRootJob());
 	for (auto itr = childList_.begin(); itr != childList_.end(); itr++) {
 		(*itr)->UpdateSub();
 	}
@@ -94,4 +97,55 @@ GameObject* GameObject::GetRootJob()
 GameObject* GameObject::FindObject(string _objName)
 {
 	return GetRootJob()->FindChildObject(_objName);
+}
+
+void GameObject::AddCollider(SphereCollider* pCollider)
+{
+	pCollider_ = pCollider;
+	//colliderList_.push_back(pCollider_);
+}
+
+void GameObject::Collision(GameObject* pTarget)
+{
+
+	if (pTarget == this || pTarget->pCollider_ == nullptr) {
+		return;//ターゲットにコライダーがアタッチされていない
+	}
+
+	/*XMVECTOR v = XMLoadFloat3(&transform_.position_);
+	XMVECTOR tv = XMLoadFloat3(&pTarget->transform_.position_);
+	v = v - tv;
+	XMVECTOR dist = XMVector3Dot(v, v);*/
+	float dist = (transform_.position_.x - pTarget->transform_.position_.x) * (transform_.position_.x - pTarget->transform_.position_.x) +
+		(transform_.position_.y - pTarget->transform_.position_.y) * (transform_.position_.y - pTarget->transform_.position_.y) +
+		(transform_.position_.z - pTarget->transform_.position_.z) * (transform_.position_.z - pTarget->transform_.position_.z);
+	float rDist = (this->pCollider_->GetRadius() + pTarget->pCollider_->GetRadius()) * (this->pCollider_->GetRadius() + pTarget->pCollider_->GetRadius());
+	//自分とターゲットの距離　<= R1+R2なら
+	//もし、自分のコライダーとターゲットがぶつかっていたら
+	//onCollision(pTarget)を呼び出す
+	if (dist <= rDist) {
+		//onCollision()よぶ
+		KillMe();
+	}
+
+}
+
+void GameObject::RoundRobin(GameObject* pTarget)
+{
+	/*for (auto itr : colliderList_) {
+		if (itr == this->pCollider_) {
+			continue;
+		}
+	}*/
+
+	if (pCollider_ == nullptr) {
+		return;
+	}
+	if (pTarget->pCollider_ != nullptr) { //自分とターゲット
+		Collision(pTarget);
+	}
+	//自分の子供全部とターゲット
+	for (auto itr = pTarget->childList_.begin(); itr != pTarget->childList_.end();itr++) {
+		RoundRobin(*itr);
+	}
 }
