@@ -64,3 +64,10 @@ void Player::Release()
 	pFbx_->Release();
 	delete pFbx_;
 }
+
+void Player::OnCollision(GameObject* pTarget)
+{
+	
+	pTarget->KillMe();
+}
+

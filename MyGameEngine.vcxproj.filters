@@ -56,13 +56,15 @@
     <ClCompile Include="PlayScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sub.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Engine\SceneManager.cpp">
       <Filter>ソースファイル\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine\SphereCollider.cpp">
+      <Filter>ソースファイル\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
       <Filter>ソースファイル\Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,9 +115,6 @@
     <ClInclude Include="Sub.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="TestScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -126,6 +125,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SphereCollider.h">
+      <Filter>ヘッダー ファイル\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
   </ItemGroup>

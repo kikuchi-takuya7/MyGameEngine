@@ -99,6 +99,11 @@ GameObject* GameObject::FindObject(string _objName)
 	return GetRootJob()->FindChildObject(_objName);
 }
 
+const std::string& GameObject::GetObjectName(void) const
+{
+	return objectName_;
+}
+
 void GameObject::AddCollider(SphereCollider* pCollider)
 {
 	pCollider_ = pCollider;
@@ -124,8 +129,7 @@ void GameObject::Collision(GameObject* pTarget)
 	//もし、自分のコライダーとターゲットがぶつかっていたら
 	//onCollision(pTarget)を呼び出す
 	if (dist <= rDist) {
-		//onCollision()よぶ
-		KillMe();
+		OnCollision(pTarget);
 	}
 
 }

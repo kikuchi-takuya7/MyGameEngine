@@ -37,10 +37,14 @@ public:
 	void UpdateSub();
 	void ReleaseSub();
 	void KillMe();
+	
+	virtual void OnCollision(GameObject* pTarget) {};
 
 	GameObject* FindChildObject(string _objName);
 	GameObject* GetRootJob();
 	GameObject* FindObject(string _objName);
+
+	const std::string& GetObjectName(void) const;
 
 	void AddCollider(SphereCollider* pCollider);
 	void Collision(GameObject* pTarget);
