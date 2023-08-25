@@ -1,7 +1,7 @@
 #pragma once
-#include "Engine/GameObject.h"
-#include "Engine/Fbx.h"
-#include "Engine/Transform.h"
+#include "GameObject.h"
+#include "Fbx.h"
+#include "Transform.h"
 #include <string>
 #include <vector>
 

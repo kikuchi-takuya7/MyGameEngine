@@ -1,6 +1,7 @@
 #include "TestScene.h"
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
+#include "Stage.h"
 
 
 //コンストラクタ
@@ -18,7 +19,8 @@ TestScene::~TestScene()
 //初期化
 void TestScene::Initialize()
 {
-    
+ 
+    Instantiate<Stage>(this);
 }
 
 //更新

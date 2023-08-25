@@ -1,6 +1,6 @@
 #include "SceneManager.h"
 #include "../TestScene.h"
-#include "../Model.h"
+#include "Model.h"
 
 //コンストラクタ
 SceneManager::SceneManager(GameObject* parent)
