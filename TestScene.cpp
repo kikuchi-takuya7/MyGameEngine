@@ -24,11 +24,7 @@ void TestScene::Initialize()
 //XV
 void TestScene::Update()
 {
-    if (Input::IsKeyDown(DIK_RETURN)) {
 
-        SceneManager* pSceneManager = (SceneManager* )FindObject("SceneManager");
-        pSceneManager->ChangeScene(SCENE_ID_PLAY);
-    }
 }
 
 //•`‰æ

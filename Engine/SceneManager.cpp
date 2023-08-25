@@ -1,6 +1,5 @@
 #include "SceneManager.h"
 #include "../TestScene.h"
-#include "../PlayScene.h"
 #include "../Model.h"
 
 //コンストラクタ
@@ -18,9 +17,9 @@ SceneManager::~SceneManager()
 //初期化
 void SceneManager::Initialize()
 {
-    currentSceneID_ = SCENE_ID_PLAY;
+    currentSceneID_ = SCENE_ID_TEST;
     nextSceneID_ = currentSceneID_;
-    Instantiate<PlayScene>(this);
+    Instantiate<TestScene>(this);
 }
 
 //更新
@@ -43,9 +42,6 @@ void SceneManager::Update()
         {
         case SCENE_ID_TEST:
             Instantiate<TestScene>(this);
-            break;
-        case SCENE_ID_PLAY:
-            Instantiate<PlayScene>(this);
             break;
         default:
             break;

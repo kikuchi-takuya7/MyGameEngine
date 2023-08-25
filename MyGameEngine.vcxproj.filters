@@ -53,19 +53,17 @@
     <ClCompile Include="Engine\RootJob.cpp">
       <Filter>ソースファイル\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="PlayScene.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Sub.cpp" />
-    <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Engine\SceneManager.cpp">
       <Filter>ソースファイル\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine\SphereCollider.cpp">
       <Filter>ソースファイル\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>ソースファイル\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,23 +104,11 @@
     <ClInclude Include="Engine\RootJob.h">
       <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="PlayScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Sub.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="TestScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SceneManager.h">
       <Filter>ヘッダー ファイル\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SphereCollider.h">
       <Filter>ヘッダー ファイル\Engine</Filter>
