@@ -2,6 +2,7 @@
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
 #include "Stage.h"
+#include "Controller.h"
 
 
 //コンストラクタ
@@ -19,7 +20,7 @@ TestScene::~TestScene()
 //初期化
 void TestScene::Initialize()
 {
- 
+    Instantiate<Controller>(this);
     Instantiate<Stage>(this);
 }
 

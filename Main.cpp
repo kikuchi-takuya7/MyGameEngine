@@ -134,11 +134,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			Input::Update();
 			pRootJob->UpdateSub();
 
+			
+
 			//描画
 			Direct3D::BeginDraw();
 
 			//ルートジョブからすべてのオブジェクトのドローを呼ぶ
 			pRootJob->DrawSub();
+
+			
 
 			Direct3D::EndDraw();
 		}
