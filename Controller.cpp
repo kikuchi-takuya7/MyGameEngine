@@ -82,13 +82,10 @@ void Controller::Update()
 
     }
 
-    //XMFLOAT3 camPos = transform_.position_;
-
-    //Camera::SetPosition(camPos);
     Camera::SetTarget(transform_.position_);
 
     XMVECTOR vCam = { 0,5,-10,0 };
-    //vCam = XMVector3TransformCoord(vCam, rotY);
+    vCam = XMVector3TransformCoord(vCam, rotY);
     XMFLOAT3 camPos;
     XMFLOAT3 camTag;
     XMStoreFloat3(&camPos, pos + vCam);
