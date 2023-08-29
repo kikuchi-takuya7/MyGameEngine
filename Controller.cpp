@@ -43,7 +43,7 @@ void Controller::Update()
     XMMATRIX rotY = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
 
     //移動ベクトルを変形 (洗車と同じ向きに回転) させる
-    //moveZ = XMVector3TransformCoord(moveZ, rotY);
+    moveZ = XMVector3TransformCoord(moveZ, rotY);
 
     //Wキーが押されたら移動
     if (Input::IsKey(DIK_W)) {
@@ -88,7 +88,7 @@ void Controller::Update()
     Camera::SetTarget(transform_.position_);
 
     XMVECTOR vCam = { 0,5,-10,0 };
-    vCam = XMVector3TransformCoord(vCam, rotY);
+    //vCam = XMVector3TransformCoord(vCam, rotY);
     XMFLOAT3 camPos;
     XMFLOAT3 camTag;
     XMStoreFloat3(&camPos, pos + vCam);
