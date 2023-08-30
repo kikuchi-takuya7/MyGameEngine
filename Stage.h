@@ -12,14 +12,21 @@ namespace {
 		WATER,
 		MAX_COLOR
 	};
+
+	struct BrockType
+	{
+		COLOR color;
+		int height;
+	}table_[XSIZE][ZSIZE];
+
 }
+
+
 
 //■■シーンを管理するクラス
 class Stage : public GameObject
 {
 public:
-
-	void SetBlock(int _x, int _z, COLOR _type);
 
 	//コンストラクタ
 	//引数：parent  親オブジェクト（SceneManager）
@@ -37,8 +44,16 @@ public:
 	//開放
 	void Release() override;
 
+	//ブロックのセット
+	void SetBlock(int _x, int _z, COLOR _type);
+
+	void SetBlockHeght(int _x, int _z, int _height);
+
 private:
 	int hModel_[MAX_COLOR];
-	int table_[XSIZE][ZSIZE];
+
+	//その座標の位置のタイプ
+	
+	
 
 };
