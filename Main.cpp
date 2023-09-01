@@ -8,6 +8,9 @@
 #include "Engine/Model.h"
 #include "DirectXCollision.h"
 
+
+
+
 #pragma comment(lib, "winmm.lib")
 
 const char* WIN_CLASS_NAME = "SanpleGame";
@@ -82,6 +85,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	if (FAILED(hr)) {
 		PostQuitMessage(0);
 	}
+
+	Fbx* pFbx = new Fbx;
+	pFbx->Load("Assets/BoxBrick.fbx");
+	RAYCASTDATA data;
+	data.start = XMFLOAT4(0, 0, 0,0);
+	data.dir = XMFLOAT4(0, -1, 0,0);
+	pFbx->RayCast(data);
+
+	int a;
+
 
 	Camera::Initialize();
 	Camera::SetTarget(XMFLOAT3(0, 0, 0));

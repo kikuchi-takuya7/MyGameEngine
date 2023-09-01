@@ -14,6 +14,14 @@
 
 //class Textue; //前方宣言と言い、ヘッダーにヘッダーをインクルードして無限ループになるときに、ヘッダーにもインクルードしたい時に使うと無限ループしなくなりＣＰＰにヘッダーかける
 
+struct RAYCASTDATA
+{
+	XMFLOAT4 start;
+	XMFLOAT4 dir;
+	bool hit;
+	float dist;
+};
+
 class Fbx
 {
 
@@ -40,6 +48,10 @@ class Fbx
 		XMVECTOR normal;
 	};
 
+
+	VERTEX* pVertices_;
+	int** ppIndex_;
+
 	int vertexCount_;	//頂点数
 	int polygonCount_;	//ポリゴン数
 	int materialCount_;	//マテリアルの個数
@@ -51,18 +63,23 @@ class Fbx
 	std::vector<int> indexCount_;
 	//Texture* pTexture_;
 
+	void InitVertex(fbxsdk::FbxMesh* mesh);
+	void InitIndex(fbxsdk::FbxMesh* mesh);
+	void InitConstantBuffer();
+	void InitMaterial(fbxsdk::FbxNode* pNode);
+
 public:
 
 	Fbx();
 	~Fbx();
 	HRESULT Load(std::string fileName);
-	void InitVertex(fbxsdk::FbxMesh* mesh);
-	void InitIndex(fbxsdk::FbxMesh* mesh);
-	void InitConstantBuffer();
-	void InitMaterial(fbxsdk::FbxNode* pNode);
+	
 	void Draw(Transform& transform);
 	void SetMap(Transform& transform);
 	void SetTexture();
 	void SetPipeline();
 	void Release();
+
+	void RayCast(RAYCASTDATA& rayData);
+
 };
