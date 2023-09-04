@@ -89,12 +89,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Fbx* pFbx = new Fbx;
 	pFbx->Load("Assets/BoxBrick.fbx");
 	RAYCASTDATA data;
-	data.start = XMFLOAT4(0, 0, 0,0);
-	data.dir = XMFLOAT4(0, -1, 0,0);
+	data.start = XMFLOAT4(0, 10, 0,0);
+	data.dir = XMFLOAT4(0, 1, 0,0);
 	pFbx->RayCast(data);
-
-	int a;
-
 
 	Camera::Initialize();
 	Camera::SetTarget(XMFLOAT3(0, 0, 0));
