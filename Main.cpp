@@ -7,7 +7,8 @@
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
 #include "DirectXCollision.h"
-
+#include "resource.h"
+#include "Stage.h"
 
 
 
@@ -20,8 +21,9 @@ const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 RootJob* pRootJob = new RootJob;
 
 
-//プロトタイプ宣言
+//プロトタイプ宣言 ここら辺はクラスに含める事ができない
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 //エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
@@ -86,12 +88,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 		PostQuitMessage(0);
 	}
 
-	Fbx* pFbx = new Fbx;
+
+	///////////////レイキャストテストコード///////////////
+	/*Fbx* pFbx = new Fbx;
 	pFbx->Load("Assets/BoxBrick.fbx");
 	RAYCASTDATA data;
 	data.start = XMFLOAT4(0, 10, 0,0);
 	data.dir = XMFLOAT4(0, 1, 0,0);
-	pFbx->RayCast(data);
+	pFbx->RayCast(data);*/
+	///////////////////////////////////////////////////////
+
 
 	Camera::Initialize();
 	Camera::SetTarget(XMFLOAT3(0, 0, 0));
@@ -105,6 +111,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	
 	pRootJob = new RootJob(nullptr);//これ以上上の親には何もないってこと
 	pRootJob->Initialize();
+
+	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
+
+	ShowWindow(hDlg, nCmdShow);
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -197,3 +207,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+//本物のダイアログプロシージャは何もせず、stageのほうのプロシージャを呼ぶ
+BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+	//FindObjectはGameObject型で返すためSialogProc関数を知らないため、一回Stage*型にキャストしてから呼び出す
+	Stage* pStage = (Stage*)pRootJob->FindObject("Stage");
+	return pStage->Stage::DialogProc(hDlg, msg, wp, lp);
+
+}
