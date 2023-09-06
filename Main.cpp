@@ -92,12 +92,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 
 	///////////////レイキャストテストコード///////////////
-	/*Fbx* pFbx = new Fbx;
+	Fbx* pFbx = new Fbx;
 	pFbx->Load("Assets/BoxBrick.fbx");
 	RAYCASTDATA data;
 	data.start = XMFLOAT4(0, 10, 0,0);
 	data.dir = XMFLOAT4(0, 1, 0,0);
-	pFbx->RayCast(data);*/
+	pFbx->RayCast(data);
 	///////////////////////////////////////////////////////
 
 

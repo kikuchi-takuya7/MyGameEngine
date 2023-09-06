@@ -22,9 +22,10 @@ struct RAYCASTDATA
 	float dist;
 };
 
+
 class Fbx
 {
-
+	
 	//ƒ}ƒeƒŠƒAƒ‹
 	struct MATERIAL
 	{
@@ -70,6 +71,7 @@ class Fbx
 
 public:
 
+	
 	Fbx();
 	~Fbx();
 	HRESULT Load(std::string fileName);
