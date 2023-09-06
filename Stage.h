@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include <Windows.h>
 
 namespace {
 	const int XSIZE{ 15 };
@@ -20,8 +21,6 @@ namespace {
 	}table_[XSIZE][ZSIZE];
 
 }
-
-
 
 //■■シーンを管理するクラス
 class Stage : public GameObject
@@ -49,11 +48,13 @@ public:
 
 	void SetBlockHeght(int _x, int _z, int _height);
 
+	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
 private:
 	int hModel_[MAX_COLOR];
 
-	//その座標の位置のタイプ
-	
-	
+	int mode_;	//0:上げる　1:下げる　2:種類を変える
+	int select_; //種類
 
+	//その座標の位置のタイプ
 };

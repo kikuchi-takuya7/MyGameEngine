@@ -1,5 +1,7 @@
 #include "Stage.h"
 #include "Engine/Model.h"
+#include "resource.h"
+
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
@@ -84,4 +86,36 @@ void Stage::SetBlock(int _x, int _z, COLOR _type)
 void Stage::SetBlockHeght(int _x, int _z, int _height)
 {
 	table_[_x][_z].height = _height;
+}
+
+//CALLBACKを消すことによってただのメンバ関数にする
+BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+	switch (msg)
+	{
+		//ダイアログができたとき
+	case WM_INITDIALOG: {
+		//ラジオボタンの初期化
+		SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
+
+		const char* modelname[] = {
+		"デフォルト",
+		"石",
+		"草",
+		"砂",
+		"水"
+		};
+		//コンボボックスの初期化
+		for (int i = 0; i < 5; i++) {
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_ADDSTRING, 0, (LPARAM)modelname[i]);
+		}
+		mode_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_SETCURSEL, 0, 0);
+		return TRUE;
+	}
+
+	/*case WM_COMMAND:
+		mode_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_SETCURSEL, 0, 0);
+		return TRUE;*/
+	}
+	return FALSE;
 }
