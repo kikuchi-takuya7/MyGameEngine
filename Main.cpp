@@ -7,7 +7,7 @@
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
 #include "DirectXCollision.h"
-
+#include "resource.h"
 
 
 
@@ -22,6 +22,8 @@ RootJob* pRootJob = new RootJob;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 //エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
@@ -105,6 +107,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	
 	pRootJob = new RootJob(nullptr);//これ以上上の親には何もないってこと
 	pRootJob->Initialize();
+
+	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
+
+	ShowWindow(hDlg, nCmdShow);
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -197,3 +203,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+	switch (msg)
+	{
+
+	}
+	return FALSE;
+}
