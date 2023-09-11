@@ -34,7 +34,7 @@ void Stage::Initialize()
 
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
-			table_[x][z].color = WATER;
+			table_[x][z].color = BRINK;
 			table_[x][z].height = 0;
 			
 		}
@@ -50,8 +50,6 @@ void Stage::Update()
 
 	if (Input::IsMouseButtonDown(0)) {
 
-
-
 		float w = (float)(Direct3D::scrWidth / 2.0f);
 		float h = (float)(Direct3D::scrHeight / 2.0f);
 		float offsetX = 0;
@@ -59,6 +57,7 @@ void Stage::Update()
 		float minZ = 0;
 		float maxZ = 1;
 
+		//ビューポート作成
 		XMMATRIX vp =
 		{
 			w                ,0                ,0           ,0,
@@ -91,6 +90,10 @@ void Stage::Update()
 		//4,3にinvVP,invPrj,invVeewをかける
 		vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
 		//5,2から4に向かってレイを打つ（とりあえず）
+
+		int changeX = 0;
+		int	changeZ = 0;
+		float minDist = 9999;
 		for (int x = 0; x < 15; x++) {
 			for (int z = 0; z < 15; z++) {
 				for (int y = 0; y < table_[x][z].height + 1; y++) {
@@ -103,17 +106,22 @@ void Stage::Update()
 					trans.position_.y = y;
 					trans.position_.z = z;
 					Model::SetTransform(hModel_[0], trans);
-									
+
 					Model::RayCast(hModel_[0], data);
 
 					if (data.hit) {
-						int i = 0;
+						if (data.dist > minDist)
+							continue;
+						changeX = x;
+						changeZ = z;
 						data.hit = false;
+						continue;
 					}
 				}
 			}
 		}
-		//6 レイが当たったらブレークポイント
+
+		table_[changeX][changeZ].height++;
 	}
 }
 
@@ -133,7 +141,6 @@ void Stage::Draw()
 				Model::Draw(hModel_[type]);
 				
 			}
-		
 		}
 	}
 	

@@ -92,6 +92,7 @@ namespace Model {
 		//3,rayData.startをモデル空間に変換（1をかける）
 		XMVECTOR vstart = XMLoadFloat4(&rayData.start);
 		vstart = XMVector3TransformCoord(vstart, invWM); //Transformcoodはw要素を無視してくれるらしい
+		XMStoreFloat4(&rayData.start, vstart); //これ　値をセットすんの忘れてた。。。
 		//4,（始点から方向ベクトルをちょい伸ばした先）通過点（２）に１をかける
 		vpass = XMVector3TransformCoord(vpass, invWM);
 		//5,rayData.dirを３から４に向かうベクトルにする（引き算）
