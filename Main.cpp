@@ -31,14 +31,6 @@ BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
 	
-	XMVECTOR beginP = XMVectorSet(1, 5, 1, 0);
-	XMVECTOR dirVec = XMVectorSet(0, -1, 0, 0);
-	XMVECTOR P1 = XMVectorSet(0, 0, 0, 0);
-	XMVECTOR P2 = XMVectorSet(0, 0, 3, 0);
-	XMVECTOR P3 = XMVectorSet(3, 0, 0, 0);
-	float dist;
-
-	bool result = TriangleTests::Intersects(beginP, dirVec, P1, P2, P3, dist);
 
 	//ウィンドウクラス（設計図）を作成
 	WNDCLASSEX wc;
@@ -92,12 +84,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 
 	///////////////レイキャストテストコード///////////////
-	Fbx* pFbx = new Fbx;
+	/*Fbx* pFbx = new Fbx;
 	pFbx->Load("Assets/BoxBrick.fbx");
 	RAYCASTDATA data;
 	data.start = XMFLOAT4(0, 10, 0,0);
 	data.dir = XMFLOAT4(0, 1, 0,0);
-	pFbx->RayCast(data);
+	pFbx->RayCast(data);*/
 	///////////////////////////////////////////////////////
 
 

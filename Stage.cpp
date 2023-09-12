@@ -115,6 +115,7 @@ void Stage::Update()
 						changeX = x;
 						changeZ = z;
 						data.hit = false;
+						minDist = data.dist;
 						continue;
 					}
 				}
