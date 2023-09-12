@@ -102,7 +102,7 @@ namespace Model {
 		//指定したモデル番号のFBXにレイキャスト!
 		modelList[hModel]->pFbx_->RayCast(rayData);
 
-		//ここでmodellistのdistの値を全部比べて一番小さい奴だけtrueにするとかかな
+		
 	}
 
     void AllRelease()

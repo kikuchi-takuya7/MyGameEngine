@@ -422,10 +422,15 @@ void Fbx::RayCast(RAYCASTDATA& rayData)
 			XMVECTOR dir = XMLoadFloat4(&rayData.dir);
 			XMVECTOR dirN = XMVector4Normalize(dir);
 
-			rayData.hit = TriangleTests::Intersects(start, dirN,v0,v1,v2,rayData.dist);
+			bool hit = false;
+			float dist = 0.0f;
 
-			if (rayData.hit) {
-				return;
+			hit = TriangleTests::Intersects(start, dirN,v0,v1,v2,dist);
+
+			//ここでreturnせずにすべてのマテリアルと当たってるか確認して、一番distが小さいやつだけtrueになるように
+			if (hit && rayData.dist > dist) {
+				rayData.hit = true;
+				rayData.dist = dist;
 			}
 		}
 	}

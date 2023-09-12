@@ -20,6 +20,8 @@ struct RAYCASTDATA
 	XMFLOAT4 dir;
 	bool hit;
 	float dist;
+
+	RAYCASTDATA() { dist = 9999.0f; }
 };
 
 

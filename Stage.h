@@ -14,6 +14,13 @@ namespace {
 		MAX_COLOR
 	};
 
+	enum DLGSTATE {
+		DLG_UP,
+		DLG_DOWN,
+		DLG_CHANGE,
+		DLG_END
+	};
+
 	struct BrockType
 	{
 		COLOR color;
@@ -50,11 +57,17 @@ public:
 
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
+	void Dlg_Up_Update();
+
+	void Dlo_Down_Update();
+
+	void Dlg_Change_Update();
+
 private:
 	int hModel_[MAX_COLOR];
 
-	int mode_;	//0:上げる　1:下げる　2:種類を変える
-	int select_; //種類
+	DLGSTATE mode_;	//0:上げる　1:下げる　2:種類を変える
+	COLOR select_; //種類
 
 	//その座標の位置のタイプ
 };
