@@ -48,6 +48,7 @@ void Stage::Initialize()
 void Stage::Update()
 {
 
+
 	if (!Input::IsMouseButtonDown(0))
 		return;
 
