@@ -52,16 +52,57 @@ void Stage::Update()
 	if (!Input::IsMouseButtonDown(0))
 		return;
 
+	float w = (float)(Direct3D::scrWidth / 2.0f);
+	float h = (float)(Direct3D::scrHeight / 2.0f);
+	float offsetX = 0;
+	float offsetY = 0;
+	float minZ = 0;
+	float maxZ = 1;
+
+	//ビューポート作成
+	XMMATRIX vp =
+	{
+		w                ,0                ,0           ,0,
+		0                ,-h               ,0           ,0,
+		0                ,0                ,maxZ - minZ ,0,
+		offsetX + w      ,offsetY + h      ,minZ        ,1
+	};
+
+	//ビューポートを逆行列に
+	XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
+	//プロジェクション変換
+	XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
+	//びゅー変換
+	XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
+	XMVECTOR mousePosVec = Input::GetMousePosition();
+	XMFLOAT3 mousePosFront;
+	XMStoreFloat3(&mousePosFront, mousePosVec);
+	mousePosFront.z = 0.0;
+	XMVECTOR mouseVec = Input::GetMousePosition();
+	XMFLOAT3 mousePosBack;
+	XMStoreFloat3(&mousePosBack, mouseVec);
+	mousePosBack.z = 1.0f;
+
+	//1,mousePosFrontをベクトルに変換
+	XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
+	//2. 1にinvVP,invPrj,invViewをかける
+	vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
+	//3,mousePosBackをベクトルに変換
+	XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
+	//4,3にinvVP,invPrj,invVeewをかける
+	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
+	//5,2から4に向かってレイを打つ（とりあえず）
+
 	switch (mode_)
 	{
 	case DLG_UP:
-		Dlg_Up_Update();
+		Dlg_Up_Update(vMouseFront, vMouseBack);
 		break;
 	case DLG_DOWN:
-		Dlo_Down_Update();
+		Dlg_Down_Update(vMouseFront, vMouseBack);
 		break;
 	case DLG_CHANGE:
-		Dlg_Change_Update();
+		Dlg_Change_Update(vMouseFront, vMouseBack);
 		break;
 	case DLG_END:
 		break;
@@ -161,52 +202,13 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	return FALSE;
 }
 
-void Stage::Dlg_Up_Update()
+void Stage::Dlg_Up_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
 {
-	float w = (float)(Direct3D::scrWidth / 2.0f);
-	float h = (float)(Direct3D::scrHeight / 2.0f);
-	float offsetX = 0;
-	float offsetY = 0;
-	float minZ = 0;
-	float maxZ = 1;
-
-	//ビューポート作成
-	XMMATRIX vp =
-	{
-		w                ,0                ,0           ,0,
-		0                ,-h               ,0           ,0,
-		0                ,0                ,maxZ - minZ ,0,
-		offsetX + w      ,offsetY + h      ,minZ        ,1
-	};
-
-	//ビューポートを逆行列に
-	XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
-	//プロジェクション変換
-	XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
-	//びゅー変換
-	XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
-	XMVECTOR mousePosVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosFront;
-	XMStoreFloat3(&mousePosFront, mousePosVec);
-	mousePosFront.z = 0.0;
-	XMVECTOR mouseVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosBack;
-	XMStoreFloat3(&mousePosBack, mouseVec);
-	mousePosBack.z = 1.0f;
-
-	//1,mousePosFrontをベクトルに変換
-	XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
-	//2. 1にinvVP,invPrj,invViewをかける
-	vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
-	//3,mousePosBackをベクトルに変換
-	XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
-	//4,3にinvVP,invPrj,invVeewをかける
-	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
-	//5,2から4に向かってレイを打つ（とりあえず）
-
 	int changeX = 0;
 	int	changeZ = 0;
-	float minDist = 9999;
+	float minDist = 9999.9f;
+	bool isHit = false;
+
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 			for (int y = 0; y < table_[x][z].height + 1; y++) {
@@ -221,65 +223,34 @@ void Stage::Dlg_Up_Update()
 				trans.position_.z = z;
 				Model::SetTransform(hModel_[0], trans);
 
-
 				Model::RayCast(hModel_[0], data);
 
 				if (data.hit) {
-					data.hit = false;
-					table_[x][z].height++;
-					return;
+					if (minDist > data.dist) {
+						minDist = data.dist;
+						changeX = x;
+						changeZ = z;
+					}
+					isHit = true;
 				}
 			}
 		}
 	}
+
+	if(isHit)
+		table_[changeX][changeZ].height++;
+
 }
 
-void Stage::Dlo_Down_Update()
+void Stage::Dlg_Down_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
 {
-	float w = (float)(Direct3D::scrWidth / 2.0f);
-	float h = (float)(Direct3D::scrHeight / 2.0f);
-	float offsetX = 0;
-	float offsetY = 0;
-	float minZ = 0;
-	float maxZ = 1;
-
-	//ビューポート作成
-	XMMATRIX vp =
-	{
-		w                ,0                ,0           ,0,
-		0                ,-h               ,0           ,0,
-		0                ,0                ,maxZ - minZ ,0,
-		offsetX + w      ,offsetY + h      ,minZ        ,1
-	};
-
-	//ビューポートを逆行列に
-	XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
-	//プロジェクション変換
-	XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
-	//びゅー変換
-	XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
-	XMVECTOR mousePosVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosFront;
-	XMStoreFloat3(&mousePosFront, mousePosVec);
-	mousePosFront.z = 0.0;
-	XMVECTOR mouseVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosBack;
-	XMStoreFloat3(&mousePosBack, mouseVec);
-	mousePosBack.z = 1.0f;
-
-	//1,mousePosFrontをベクトルに変換
-	XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
-	//2. 1にinvVP,invPrj,invViewをかける
-	vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
-	//3,mousePosBackをベクトルに変換
-	XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
-	//4,3にinvVP,invPrj,invVeewをかける
-	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
-	//5,2から4に向かってレイを打つ（とりあえず）
+	
 
 	int changeX = 0;
 	int	changeZ = 0;
 	float minDist = 9999;
+	bool isHit = false;
+
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 			for (int y = 0; y < table_[x][z].height; y++) {
@@ -298,61 +269,29 @@ void Stage::Dlo_Down_Update()
 				Model::RayCast(hModel_[0], data);
 
 				if (data.hit) {
-					data.hit = false;
-					table_[x][z].height--;
-					return;
+					if (minDist > data.dist) {
+						minDist = data.dist;
+						changeX = x;
+						changeZ = z;
+					}
+					isHit = true;
 				}
 			}
 		}
 	}
+
+	if (isHit)
+		table_[changeX][changeZ].height--;
+
 }
 
-void Stage::Dlg_Change_Update()
+void Stage::Dlg_Change_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
 {
-	float w = (float)(Direct3D::scrWidth / 2.0f);
-	float h = (float)(Direct3D::scrHeight / 2.0f);
-	float offsetX = 0;
-	float offsetY = 0;
-	float minZ = 0;
-	float maxZ = 1;
-
-	//ビューポート作成
-	XMMATRIX vp =
-	{
-		w                ,0                ,0           ,0,
-		0                ,-h               ,0           ,0,
-		0                ,0                ,maxZ - minZ ,0,
-		offsetX + w      ,offsetY + h      ,minZ        ,1
-	};
-
-	//ビューポートを逆行列に
-	XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
-	//プロジェクション変換
-	XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
-	//びゅー変換
-	XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
-	XMVECTOR mousePosVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosFront;
-	XMStoreFloat3(&mousePosFront, mousePosVec);
-	mousePosFront.z = 0.0;
-	XMVECTOR mouseVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosBack;
-	XMStoreFloat3(&mousePosBack, mouseVec);
-	mousePosBack.z = 1.0f;
-
-	//1,mousePosFrontをベクトルに変換
-	XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
-	//2. 1にinvVP,invPrj,invViewをかける
-	vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
-	//3,mousePosBackをベクトルに変換
-	XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
-	//4,3にinvVP,invPrj,invVeewをかける
-	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
-	//5,2から4に向かってレイを打つ（とりあえず）
-
+	
 	int changeX = 0;
 	int	changeZ = 0;
 	float minDist = 9999;
+	bool isHit = false;
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 			for (int y = 0; y < table_[x][z].height + 1; y++) {
@@ -370,11 +309,16 @@ void Stage::Dlg_Change_Update()
 				Model::RayCast(hModel_[0], data);
 
 				if (data.hit) {
-					data.hit = false;
-					table_[x][z].color = select_;
-					return;
+					if (minDist > data.dist) {
+						minDist = data.dist;
+						changeX = x;
+						changeZ = z;
+					}
+					isHit = true;
 				}
 			}
 		}
 	}
+
+	table_[changeX][changeZ].color = select_;
 }

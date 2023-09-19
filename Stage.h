@@ -27,6 +27,13 @@ namespace {
 		int height;
 	}table_[XSIZE][ZSIZE];
 
+	struct DistList
+	{
+		float hitDist;
+		int hitX;
+		int hitZ;
+	}distlist_;
+
 }
 
 //■■シーンを管理するクラス
@@ -57,11 +64,11 @@ public:
 
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
-	void Dlg_Up_Update();
+	void Dlg_Up_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
 
-	void Dlo_Down_Update();
+	void Dlg_Down_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
 
-	void Dlg_Change_Update();
+	void Dlg_Change_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
 
 private:
 	int hModel_[MAX_COLOR];
