@@ -27,12 +27,7 @@ namespace {
 		int height;
 	}table_[XSIZE][ZSIZE];
 
-	struct DistList
-	{
-		float hitDist;
-		int hitX;
-		int hitZ;
-	}distlist_;
+	
 
 }
 
@@ -69,6 +64,9 @@ public:
 	void Dlg_Down_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
 
 	void Dlg_Change_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
+
+
+	void CheckHitRay(bool isHit, int changeX, int changeZ);
 
 private:
 	int hModel_[MAX_COLOR];

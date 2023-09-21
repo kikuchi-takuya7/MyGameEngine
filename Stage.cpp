@@ -40,7 +40,7 @@ void Stage::Initialize()
 		}
 	}
 
-	SetBlockHeght(5, 5, 3);
+	//SetBlockHeght(5, 5, 3);
 	
 }
 
@@ -93,17 +93,55 @@ void Stage::Update()
 	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
 	//5,2Ç©ÇÁ4Ç…å¸Ç©Ç¡ÇƒÉåÉCÇë≈Ç¬ÅiÇ∆ÇËÇ†Ç¶Ç∏Åj
 
+	int changeX = 0;
+	int	changeZ = 0;
+	float minDist = 9999;
+	bool isHit = false;
+	for (int x = 0; x < XSIZE; x++) {
+		for (int z = 0; z < ZSIZE; z++) {
+			for (int y = 0; y < table_[x][z].height + 1; y++) {
+
+				RAYCASTDATA data;
+				data.hit = false;
+				XMStoreFloat4(&data.start, vMouseFront);
+				XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
+				Transform trans;
+				trans.position_.x = x;
+				trans.position_.y = y;
+				trans.position_.z = z;
+				Model::SetTransform(hModel_[0], trans);
+
+				Model::RayCast(hModel_[0], data);
+
+				if (data.hit) {
+					if (minDist > data.dist) {
+						minDist = data.dist;
+						changeX = x;
+						changeZ = z;
+					}
+					isHit = true;
+				}
+			}
+		}
+	}
+
 	switch (mode_)
 	{
 	case DLG_UP:
-		Dlg_Up_Update(vMouseFront, vMouseBack);
+		if (isHit)
+			table_[changeX][changeZ].height++;
 		break;
+
 	case DLG_DOWN:
-		Dlg_Down_Update(vMouseFront, vMouseBack);
+		if (isHit && table_[changeX][changeZ].height != 0)
+			table_[changeX][changeZ].height--;
 		break;
+
 	case DLG_CHANGE:
-		Dlg_Change_Update(vMouseFront, vMouseBack);
+		if (isHit)
+			table_[changeX][changeZ].color = select_;
 		break;
+
 	case DLG_END:
 		break;
 	default:
@@ -320,5 +358,6 @@ void Stage::Dlg_Change_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
 		}
 	}
 
-	table_[changeX][changeZ].color = select_;
+	if(isHit)
+		table_[changeX][changeZ].color = select_;
 }

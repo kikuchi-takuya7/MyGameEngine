@@ -427,7 +427,8 @@ void Fbx::RayCast(RAYCASTDATA& rayData)
 
 			hit = TriangleTests::Intersects(start, dirN,v0,v1,v2,dist);
 
-			//ここでreturnせずにすべてのマテリアルと当たってるか確認して、一番distが小さいやつだけtrueになるように
+			//ここでreturnせずにすべてのマテリアルと当たってるか確認して、一番distが小さいやつがrayData.distに入るように
+			//hitじゃなくてrayData.hitにしてしまうとこの２重for分の最後の処理でhitがfalseだった場合にstageの方でfalseのまま処理が進んでしまう
 			if (hit && rayData.dist > dist) {
 				rayData.hit = true;
 				rayData.dist = dist;

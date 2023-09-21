@@ -21,6 +21,7 @@ struct RAYCASTDATA
 	bool hit;
 	float dist;
 
+	//dist‚¾‚¯ŒÄ‚Ño‚³‚ê‚½“_‚Å‰Šú‰»‚µ‚Ä‚¨‚­
 	RAYCASTDATA() { dist = 9999.0f; }
 };
 
