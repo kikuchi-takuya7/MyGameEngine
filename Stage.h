@@ -57,16 +57,16 @@ public:
 
 	void SetBlockHeght(int _x, int _z, int _height);
 
+	//ダイアログプロシージャ
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
-	void Dlg_Up_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
+	//各種update関数
+	void Dlg_Up_Update(int _changeX, int _changeZ);
+	void Dlg_Down_Update(int _changeX, int _changeZ);
+	void Dlg_Change_Update(int _changeX, int _changeZ);
 
-	void Dlg_Down_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
-
-	void Dlg_Change_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack);
-
-
-	void CheckHitRay(bool isHit, int changeX, int changeZ);
+	//レイが当たってたらisHitがtrueになって変更される位置のx,zが返される
+	void CheckHitRay(bool &_isHit, int &_changeX, int &_changeZ);
 
 private:
 	int hModel_[MAX_COLOR];
@@ -74,5 +74,4 @@ private:
 	DLGSTATE mode_;	//0:上げる　1:下げる　2:種類を変える
 	COLOR select_; //種類
 
-	//その座標の位置のタイプ
 };

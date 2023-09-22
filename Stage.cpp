@@ -52,94 +52,36 @@ void Stage::Update()
 	if (!Input::IsMouseButtonDown(0))
 		return;
 
-	float w = (float)(Direct3D::scrWidth / 2.0f);
-	float h = (float)(Direct3D::scrHeight / 2.0f);
-	float offsetX = 0;
-	float offsetY = 0;
-	float minZ = 0;
-	float maxZ = 1;
-
-	//ビューポート作成
-	XMMATRIX vp =
-	{
-		w                ,0                ,0           ,0,
-		0                ,-h               ,0           ,0,
-		0                ,0                ,maxZ - minZ ,0,
-		offsetX + w      ,offsetY + h      ,minZ        ,1
-	};
-
-	//ビューポートを逆行列に
-	XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
-	//プロジェクション変換
-	XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
-	//びゅー変換
-	XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
-	XMVECTOR mousePosVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosFront;
-	XMStoreFloat3(&mousePosFront, mousePosVec);
-	mousePosFront.z = 0.0;
-	XMVECTOR mouseVec = Input::GetMousePosition();
-	XMFLOAT3 mousePosBack;
-	XMStoreFloat3(&mousePosBack, mouseVec);
-	mousePosBack.z = 1.0f;
-
-	//1,mousePosFrontをベクトルに変換
-	XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
-	//2. 1にinvVP,invPrj,invViewをかける
-	vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
-	//3,mousePosBackをベクトルに変換
-	XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
-	//4,3にinvVP,invPrj,invVeewをかける
-	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
-	//5,2から4に向かってレイを打つ（とりあえず）
 
 	int changeX = 0;
 	int	changeZ = 0;
-	float minDist = 9999;
 	bool isHit = false;
-	for (int x = 0; x < XSIZE; x++) {
-		for (int z = 0; z < ZSIZE; z++) {
-			for (int y = 0; y < table_[x][z].height + 1; y++) {
 
-				RAYCASTDATA data;
-				data.hit = false;
-				XMStoreFloat4(&data.start, vMouseFront);
-				XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
-				Transform trans;
-				trans.position_.x = x;
-				trans.position_.y = y;
-				trans.position_.z = z;
-				Model::SetTransform(hModel_[0], trans);
-
-				Model::RayCast(hModel_[0], data);
-
-				if (data.hit) {
-					if (minDist > data.dist) {
-						minDist = data.dist;
-						changeX = x;
-						changeZ = z;
-					}
-					isHit = true;
-				}
-			}
-		}
-	}
+	CheckHitRay(isHit, changeX, changeZ);
 
 	switch (mode_)
 	{
 	case DLG_UP:
-		if (isHit)
-			table_[changeX][changeZ].height++;
+
+		if (isHit && table_[changeX][changeZ].height < 5) {
+			Dlg_Up_Update(changeX, changeZ);
+		}
+			
 		break;
 
 	case DLG_DOWN:
-		if (isHit && table_[changeX][changeZ].height != 0)
-			table_[changeX][changeZ].height--;
+
+		if (isHit && table_[changeX][changeZ].height > 0) {
+			Dlg_Down_Update(changeX, changeZ);
+		}
+			
 		break;
 
 	case DLG_CHANGE:
-		if (isHit)
-			table_[changeX][changeZ].color = select_;
+		if (isHit) {
+			Dlg_Change_Update(changeX, changeZ);
+		}
+			
 		break;
 
 	case DLG_END:
@@ -240,13 +182,68 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	return FALSE;
 }
 
-void Stage::Dlg_Up_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
+void Stage::Dlg_Up_Update(int _changeX, int _changeZ)
 {
-	int changeX = 0;
-	int	changeZ = 0;
-	float minDist = 9999.9f;
-	bool isHit = false;
+	table_[_changeX][_changeZ].height++;
 
+}
+
+void Stage::Dlg_Down_Update(int _changeX, int _changeZ)
+{
+	table_[_changeX][_changeZ].height--;
+
+}
+
+void Stage::Dlg_Change_Update(int _changeX, int _changeZ)
+{
+	table_[_changeX][_changeZ].color = select_;
+	
+}
+
+void Stage::CheckHitRay(bool &_isHit, int &_changeX, int &_changeZ)
+{
+	float w = (float)(Direct3D::scrWidth / 2.0f);
+	float h = (float)(Direct3D::scrHeight / 2.0f);
+	float offsetX = 0;
+	float offsetY = 0;
+	float minZ = 0;
+	float maxZ = 1;
+
+	//ビューポート作成
+	XMMATRIX vp =
+	{
+		w                ,0                ,0           ,0,
+		0                ,-h               ,0           ,0,
+		0                ,0                ,maxZ - minZ ,0,
+		offsetX + w      ,offsetY + h      ,minZ        ,1
+	};
+
+	//ビューポートを逆行列に
+	XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
+	//プロジェクション変換
+	XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
+	//びゅー変換
+	XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
+	XMVECTOR mousePosVec = Input::GetMousePosition();
+	XMFLOAT3 mousePosFront;
+	XMStoreFloat3(&mousePosFront, mousePosVec);
+	mousePosFront.z = 0.0;
+	XMVECTOR mouseVec = Input::GetMousePosition();
+	XMFLOAT3 mousePosBack;
+	XMStoreFloat3(&mousePosBack, mouseVec);
+	mousePosBack.z = 1.0f;
+
+	//1,mousePosFrontをベクトルに変換
+	XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
+	//2. 1にinvVP,invPrj,invViewをかける
+	vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
+	//3,mousePosBackをベクトルに変換
+	XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
+	//4,3にinvVP,invPrj,invVeewをかける
+	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
+	//5,2から4に向かってレイを打つ（とりあえず）
+
+	float minDist = 9999;
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 			for (int y = 0; y < table_[x][z].height + 1; y++) {
@@ -263,101 +260,17 @@ void Stage::Dlg_Up_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
 
 				Model::RayCast(hModel_[0], data);
 
+				//わざわざisHitを作ってるのはループの最後のオブジェクトにレイが当たってなかったらfalseになってしまうため
+				//ループ事にdata.hitを初期化しないとずっとtrueになるし
 				if (data.hit) {
 					if (minDist > data.dist) {
 						minDist = data.dist;
-						changeX = x;
-						changeZ = z;
+						_changeX = x;
+						_changeZ = z;
 					}
-					isHit = true;
+					_isHit = true;
 				}
 			}
 		}
 	}
-
-	if(isHit)
-		table_[changeX][changeZ].height++;
-
-}
-
-void Stage::Dlg_Down_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
-{
-	
-
-	int changeX = 0;
-	int	changeZ = 0;
-	float minDist = 9999;
-	bool isHit = false;
-
-	for (int x = 0; x < XSIZE; x++) {
-		for (int z = 0; z < ZSIZE; z++) {
-			for (int y = 0; y < table_[x][z].height; y++) {
-
-				RAYCASTDATA data;
-				data.hit = false;
-				XMStoreFloat4(&data.start, vMouseFront);
-				XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
-				Transform trans;
-				trans.position_.x = x;
-				trans.position_.y = y;
-				trans.position_.z = z;
-				Model::SetTransform(hModel_[0], trans);
-
-
-				Model::RayCast(hModel_[0], data);
-
-				if (data.hit) {
-					if (minDist > data.dist) {
-						minDist = data.dist;
-						changeX = x;
-						changeZ = z;
-					}
-					isHit = true;
-				}
-			}
-		}
-	}
-
-	if (isHit)
-		table_[changeX][changeZ].height--;
-
-}
-
-void Stage::Dlg_Change_Update(XMVECTOR vMouseFront, XMVECTOR vMouseBack)
-{
-	
-	int changeX = 0;
-	int	changeZ = 0;
-	float minDist = 9999;
-	bool isHit = false;
-	for (int x = 0; x < XSIZE; x++) {
-		for (int z = 0; z < ZSIZE; z++) {
-			for (int y = 0; y < table_[x][z].height + 1; y++) {
-
-				RAYCASTDATA data;
-				data.hit = false;
-				XMStoreFloat4(&data.start, vMouseFront);
-				XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
-				Transform trans;
-				trans.position_.x = x;
-				trans.position_.y = y;
-				trans.position_.z = z;
-				Model::SetTransform(hModel_[0], trans);
-
-				Model::RayCast(hModel_[0], data);
-
-				if (data.hit) {
-					if (minDist > data.dist) {
-						minDist = data.dist;
-						changeX = x;
-						changeZ = z;
-					}
-					isHit = true;
-				}
-			}
-		}
-	}
-
-	if(isHit)
-		table_[changeX][changeZ].color = select_;
 }
