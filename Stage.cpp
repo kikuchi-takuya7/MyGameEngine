@@ -260,8 +260,7 @@ void Stage::CheckHitRay(bool &_isHit, int &_changeX, int &_changeZ)
 
 				Model::RayCast(hModel_[0], data);
 
-				//わざわざisHitを作ってるのはループの最後のオブジェクトにレイが当たってなかったらfalseになってしまうため
-				//ループ事にdata.hitを初期化しないとずっとtrueになるし
+				//わざわざisHitを作ってるのは
 				if (data.hit) {
 					if (minDist > data.dist) {
 						minDist = data.dist;
