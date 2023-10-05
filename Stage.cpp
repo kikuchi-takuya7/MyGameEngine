@@ -4,6 +4,7 @@
 #include "Engine/Direct3D.h"
 #include "Engine/Input.h"
 
+const LPCSTR fileName = "MapSave";
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
@@ -26,6 +27,10 @@ void Stage::Initialize()
 	};
 
 	string fname_Base = "assets/";
+
+
+	//セーブは高さ種類高さ種類で行く
+
 	//モデルデータのロード
 	for (int i = 0; i < MAX_COLOR; i++) {
 		hModel_[i] = Model::Load(fname_Base + modelname[i]);
@@ -161,6 +166,17 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	}
 
 	case WM_COMMAND:
+
+		if (IsDlgButtonChecked(hDlg, ID_MENU_NEW)) {
+
+		}
+		else if (IsDlgButtonChecked(hDlg, ID_MENU_OPEN)) {
+
+		}
+		else if (IsDlgButtonChecked(hDlg, ID_MENU_SAVE)) {
+			Save();
+		}
+
 		if (IsDlgButtonChecked(hDlg, IDC_RADIO_UP)) {
 			mode_ = DLG_UP;
 			return TRUE;
@@ -172,8 +188,9 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		else if (IsDlgButtonChecked(hDlg, IDC_RADIO_CHANGE)) {
 			mode_ = DLG_CHANGE;
 			//return TRUE;
-			
 		}
+
+		
 
 		select_ = (COLOR)SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
 
@@ -270,6 +287,101 @@ void Stage::CheckHitRay(bool &_isHit, int &_changeX, int &_changeZ)
 					_isHit = true;
 				}
 			}
+		}
+	}
+}
+
+void Stage::Save()
+{
+	HANDLE hFile;        //ファイルのハンドル
+	hFile = CreateFile(
+		fileName,                 //ファイル名
+		GENERIC_WRITE,           //アクセスモード（書き込み用）
+		0,                      //共有（なし）
+		NULL,                   //セキュリティ属性（継承しない）
+		CREATE_ALWAYS ,           //作成方法
+		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
+		NULL);                  //拡張属性（なし）
+
+	if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
+		PostQuitMessage(0);
+		return;
+	}
+
+	for (int x = 0; x < XSIZE; x++) {
+		for (int z = 0; z < ZSIZE; z++) {
+
+			string str = std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color) + ",";
+			//string str = std::to_string(table_[x][z].color);
+
+			DWORD dwBytes = 0;  //書き込み位置
+			WriteFile(
+				hFile,                   //ファイルハンドル
+				str.c_str(),                  //保存するデータ（文字列）
+				(DWORD)strlen(str.c_str()),   //書き込む文字数
+				&dwBytes,                //書き込んだサイズを入れる変数
+				NULL);                   //オーバーラップド構造体（今回は使わない）
+
+		}
+	}
+	
+	CloseHandle(hFile);
+
+}
+
+void Stage::Load()
+{
+	HANDLE hFile;        //ファイルのハンドル
+	hFile = CreateFile(
+		fileName,                 //ファイル名
+		GENERIC_READ,           //アクセスモード（書き込み用）
+		0,                      //共有（なし）
+		NULL,                   //セキュリティ属性（継承しない）
+		OPEN_ALWAYS,           //作成方法
+		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
+		NULL);                  //拡張属性（なし）
+
+	if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
+		PostQuitMessage(0);
+		return;
+	}
+
+	//先にファイルの中身を全部読み込んでからコンマの処理
+			//ファイルのサイズを取得
+	DWORD fileSize = GetFileSize(hFile, NULL);
+
+	//ファイルのサイズ分メモリを確保
+	char* data;
+	data = new char[fileSize];
+
+	DWORD dwBytes = 0; //読み込み位置
+
+	ReadFile(
+		hFile,     //ファイルハンドル
+		data,      //データを入れる変数
+		fileSize,  //読み込むサイズ
+		&dwBytes,  //読み込んだサイズ
+		NULL);     //オーバーラップド構造体（今回は使わない）
+
+	for (int x = 0; x < XSIZE; x++) {
+		for (int z = 0; z < ZSIZE; z++) {
+
+			string result;
+			while (data[dwBytes] != ',' || data[dwBytes] != '\n') {
+				result += data[dwBytes];
+				dwBytes++;
+			}
+
+			table_[x][z].height = atoi(result.c_str());
+
+			result.erase();
+			while (data[dwBytes] != ',' || data[dwBytes] != '\n') {
+				result += data[dwBytes];
+				dwBytes++;
+			}
+
+			table_[x][z].color = (COLOR)atoi(result.c_str());
+
 		}
 	}
 }

@@ -5,6 +5,7 @@
 namespace {
 	const int XSIZE{ 15 };
 	const int ZSIZE{ 15 };
+
 	enum COLOR {
 		DEFAULT,
 		BRINK,
@@ -67,6 +68,12 @@ public:
 
 	//レイが当たってたらisHitがtrueになって変更される位置のx,zが返される
 	void CheckHitRay(bool &_isHit, int &_changeX, int &_changeZ);
+
+	//セーブする
+	void Save();
+
+	void Load();
+
 
 private:
 	int hModel_[MAX_COLOR];
