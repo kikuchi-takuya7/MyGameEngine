@@ -197,6 +197,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY://ウィンドウが閉じられたら
 		PostQuitMessage(0);  //プログラム終了
 		return 0;
+	case WM_COMMAND:
+
+		switch (LOWORD(wParam))
+		{
+		case ID_MENU_NEW:
+			OutputDebugString("新規");
+			break;
+		case ID_MENU_OPEN:
+			OutputDebugString("hiraku");
+			break;
+		case ID_MENU_SAVE: {
+			OutputDebugString("セーブ");
+			((Stage*)pRootJob->FindObject("Stage"))->Save();
+			break;
+		}
+		case ID_MENU_NAMESAVE:
+			OutputDebugString("名前を付けて");
+			((Stage*)pRootJob->FindObject("Stage"))->NameSave();
+			break;
+		}
+
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

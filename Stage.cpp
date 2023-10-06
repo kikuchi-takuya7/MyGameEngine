@@ -37,14 +37,15 @@ void Stage::Initialize()
 		assert(hModel_[i] >= 0);
 	}
 
-	for (int x = 0; x < XSIZE; x++) {
+	/*for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 			table_[x][z].color = DEFAULT;
 			table_[x][z].height = 0;
 			
 		}
-	}
+	}*/
 
+	Load();
 	//SetBlockHeght(5, 5, 3);
 	
 }
@@ -167,16 +168,6 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 	case WM_COMMAND:
 
-		if (IsDlgButtonChecked(hDlg, ID_MENU_NEW)) {
-
-		}
-		else if (IsDlgButtonChecked(hDlg, ID_MENU_OPEN)) {
-
-		}
-		else if (IsDlgButtonChecked(hDlg, ID_MENU_SAVE)) {
-			Save();
-		}
-
 		if (IsDlgButtonChecked(hDlg, IDC_RADIO_UP)) {
 			mode_ = DLG_UP;
 			return TRUE;
@@ -189,8 +180,6 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 			mode_ = DLG_CHANGE;
 			//return TRUE;
 		}
-
-		
 
 		select_ = (COLOR)SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
 
@@ -327,6 +316,29 @@ void Stage::Save()
 	
 	CloseHandle(hFile);
 
+}
+
+void Stage::NameSave()
+{
+	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+
+	//「ファイルを保存」ダイアログの設定
+	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
+		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+	ofn.lpstrFile = fileName;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+
+	//「ファイルを保存」ダイアログ
+	BOOL selFile;
+	selFile = GetSaveFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
 }
 
 void Stage::Load()

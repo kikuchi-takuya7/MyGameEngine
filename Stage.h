@@ -72,6 +72,8 @@ public:
 	//ƒZ[ƒu‚·‚é
 	void Save();
 
+	void NameSave();
+
 	void Load();
 
 
