@@ -292,10 +292,10 @@ void Stage::Save()
 		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
 		NULL);                  //拡張属性（なし）
 
-	if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
-		PostQuitMessage(0);
-		return;
-	}
+	//if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
+	//	PostQuitMessage(0);
+	//	return;
+	//}
 
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
@@ -375,22 +375,28 @@ void Stage::Load()
 		&dwBytes,  //読み込んだサイズ
 		NULL);     //オーバーラップド構造体（今回は使わない）
 
+	DWORD nowBytes = 0;
+
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 
 			string result;
-			while (data[dwBytes] != ',' || data[dwBytes] != '\n') {
-				result += data[dwBytes];
-				dwBytes++;
+			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
+				result += data[nowBytes];
+				nowBytes++;
 			}
+
+			nowBytes++;//コンマの部分を飛ばす
 
 			table_[x][z].height = atoi(result.c_str());
 
 			result.erase();
-			while (data[dwBytes] != ',' || data[dwBytes] != '\n') {
-				result += data[dwBytes];
-				dwBytes++;
+			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {
+				result += data[nowBytes];
+				nowBytes++;
 			}
+
+			nowBytes++;
 
 			table_[x][z].color = (COLOR)atoi(result.c_str());
 
