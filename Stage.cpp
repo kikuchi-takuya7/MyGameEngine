@@ -4,7 +4,7 @@
 #include "Engine/Direct3D.h"
 #include "Engine/Input.h"
 
-const LPCSTR fileName = "MapSave";
+const LPCSTR fileName = "Assets/無題.map";
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
@@ -292,27 +292,25 @@ void Stage::Save()
 		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
 		NULL);                  //拡張属性（なし）
 
-	//if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
-	//	PostQuitMessage(0);
-	//	return;
-	//}
+	if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
+		return;
+	}
+
+	string str;
 
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
-
-			string str = std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color) + ",";
-			//string str = std::to_string(table_[x][z].color);
-
-			DWORD dwBytes = 0;  //書き込み位置
-			WriteFile(
-				hFile,                   //ファイルハンドル
-				str.c_str(),                  //保存するデータ（文字列）
-				(DWORD)strlen(str.c_str()),   //書き込む文字数
-				&dwBytes,                //書き込んだサイズを入れる変数
-				NULL);                   //オーバーラップド構造体（今回は使わない）
-
+			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color) + ",";
 		}
 	}
+
+	DWORD dwBytes = 0;  //書き込み位置
+	WriteFile(
+		hFile,                   //ファイルハンドル
+		str.c_str(),                  //保存するデータ（文字列）
+		(DWORD)strlen(str.c_str()),   //書き込む文字数
+		&dwBytes,                //書き込んだサイズを入れる変数
+		NULL);                   //オーバーラップド構造体（今回は使わない）
 	
 	CloseHandle(hFile);
 
@@ -339,6 +337,38 @@ void Stage::NameSave()
 
 	//キャンセルしたら中断
 	if (selFile == FALSE) return;
+
+	HANDLE hFile;        //ファイルのハンドル
+	hFile = CreateFile(
+		fileName,                 //ファイル名
+		GENERIC_WRITE,           //アクセスモード（書き込み用）
+		0,                      //共有（なし）
+		NULL,                   //セキュリティ属性（継承しない）
+		CREATE_ALWAYS,           //作成方法
+		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
+		NULL);                  //拡張属性（なし）
+
+	if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
+		return;
+	}
+
+	string str;
+
+	for (int x = 0; x < XSIZE; x++) {
+		for (int z = 0; z < ZSIZE; z++) {
+			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color) + ",";
+		}
+	}
+
+	DWORD dwBytes = 0;  //書き込み位置
+	WriteFile(
+		hFile,                   //ファイルハンドル
+		str.c_str(),                  //保存するデータ（文字列）
+		(DWORD)strlen(str.c_str()),   //書き込む文字数
+		&dwBytes,                //書き込んだサイズを入れる変数
+		NULL);                   //オーバーラップド構造体（今回は使わない）
+
+	CloseHandle(hFile);
 }
 
 void Stage::Load()
@@ -349,12 +379,11 @@ void Stage::Load()
 		GENERIC_READ,           //アクセスモード（書き込み用）
 		0,                      //共有（なし）
 		NULL,                   //セキュリティ属性（継承しない）
-		OPEN_ALWAYS,           //作成方法
+		OPEN_EXISTING,           //作成方法
 		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
 		NULL);                  //拡張属性（なし）
 
 	if (hFile == INVALID_HANDLE_VALUE) {//失敗したとき
-		PostQuitMessage(0);
 		return;
 	}
 
