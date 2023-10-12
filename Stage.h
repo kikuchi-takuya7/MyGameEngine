@@ -76,11 +76,17 @@ public:
 
 	void Load();
 
+	void NewCreate();
+
+	void NowFileLoad();
+
 
 private:
 	int hModel_[MAX_COLOR];
 
 	DLGSTATE mode_;	//0:上げる　1:下げる　2:種類を変える
 	COLOR select_; //種類
+
+	char fileName_[MAX_PATH];  //ファイル名を入れる変数
 
 };

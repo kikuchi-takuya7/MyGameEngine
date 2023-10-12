@@ -203,6 +203,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 		case ID_MENU_NEW:
 			OutputDebugString("V‹K");
+			((Stage*)pRootJob->FindObject("Stage"))->NewCreate();
 			break;
 		case ID_MENU_OPEN:
 			OutputDebugString("hiraku");
