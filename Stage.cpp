@@ -8,7 +8,7 @@
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"),hModel_{-1,-1,-1,-1,-1},fileName_{"無題.map"}
+	: GameObject(parent, "Stage"),hModel_{-1,-1,-1,-1,-1},fileName_{"新規フォルダ.csv"}
 {
 }
 
@@ -37,13 +37,13 @@ void Stage::Initialize()
 		assert(hModel_[i] >= 0);
 	}
 
-	/*for (int x = 0; x < XSIZE; x++) {
+	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 			table_[x][z].color = DEFAULT;
 			table_[x][z].height = 0;
 			
 		}
-	}*/
+	}
 
 	Load();
 	//SetBlockHeght(5, 5, 3);
@@ -104,13 +104,12 @@ void Stage::Draw()
 
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
-			Transform blockTrans;
-			blockTrans.position_.z = z;
-			blockTrans.position_.x = x;
-
 			for (int y = 0; y < table_[x][z].height + 1; y++) {
 				int type = table_[x][z].color;
 				
+				Transform blockTrans;
+				blockTrans.position_.z = z;
+				blockTrans.position_.x = x;
 				blockTrans.position_.y = y;
 				Model::SetTransform(hModel_[type], blockTrans);
 				Model::Draw(hModel_[type]);
@@ -292,21 +291,7 @@ void Stage::Save()
 		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
 		NULL);                  //拡張属性（なし）
 
-	string str;
-
-	for (int z = 0; z < ZSIZE; z++) {
-		for (int x = 0; x < XSIZE; x++) {
-			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color) + ",";
-		}
-	}
-
-	DWORD dwBytes = 0;  //書き込み位置
-	WriteFile(
-		hFile,                   //ファイルハンドル
-		str.c_str(),                  //保存するデータ（文字列）
-		(DWORD)strlen(str.c_str()),   //書き込む文字数
-		&dwBytes,                //書き込んだサイズを入れる変数
-		NULL);                   //オーバーラップド構造体（今回は使わない）
+	SaveTheTable(hFile);
 	
 	CloseHandle(hFile);
 
@@ -317,15 +302,8 @@ void Stage::NameSave()
 	//char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
 
 	//「ファイルを保存」ダイアログの設定
-	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
-	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
-		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
-	ofn.lpstrFile = fileName_;               	//ファイル名
-	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
-	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
-	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+	OPENFILENAME ofn = InitOpenFileName();                         	//名前をつけて保存ダイアログの設定用構造体
+
 
 	//「ファイルを保存」ダイアログ
 	BOOL selFile;
@@ -344,21 +322,7 @@ void Stage::NameSave()
 		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
 		NULL);                  //拡張属性（なし）
 
-	string str;
-
-	for (int z = 0; z < ZSIZE; z++) {
-		for (int x = 0; x < XSIZE; x++) {
-			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color) + ",";
-		}
-	}
-
-	DWORD dwBytes = 0;  //書き込み位置
-	WriteFile(
-		hFile,                   //ファイルハンドル
-		str.c_str(),                  //保存するデータ（文字列）
-		(DWORD)strlen(str.c_str()),   //書き込む文字数
-		&dwBytes,                //書き込んだサイズを入れる変数
-		NULL);                   //オーバーラップド構造体（今回は使わない）
+	SaveTheTable(hFile);
 
 	CloseHandle(hFile);
 }
@@ -369,15 +333,7 @@ void Stage::Load()
 	//char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
 
 	//「ファイルを保存」ダイアログの設定
-	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
-	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
-					  TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
-	ofn.lpstrFile = fileName_;               	//ファイル名
-	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
-	ofn.Flags = OFN_FILEMUSTEXIST;   		//フラグ（同名ファイルが存在したら上書き確認）
-	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+	OPENFILENAME ofn = InitOpenFileName();
 
 	//「ファイルを保存」ダイアログ
 	BOOL selFile;
@@ -413,48 +369,14 @@ void Stage::Load()
 		&dwBytes,  //読み込んだサイズ
 		NULL);     //オーバーラップド構造体（今回は使わない）
 
-	DWORD nowBytes = 0;
-
-	for (int z = 0; z < ZSIZE; z++) {
-		for (int x = 0; x < XSIZE; x++) {
-
-			string result;
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
-				result += data[nowBytes];
-				nowBytes++;
-			}
-
-			nowBytes++;//コンマの部分を飛ばす
-
-			table_[x][z].height = atoi(result.c_str());
-
-			result.erase();
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {
-				result += data[nowBytes];
-				nowBytes++;
-			}
-
-			nowBytes++;
-
-			table_[x][z].color = (COLOR)atoi(result.c_str());
-
-		}
-	}
+	LoadTheTable(data);
 
 	CloseHandle(hFile);
 }
 
 void Stage::NewCreate()
 {
-	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
-	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
-		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
-	ofn.lpstrFile = fileName_;               	//ファイル名
-	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
-	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
-	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+	OPENFILENAME ofn = InitOpenFileName();                         	//名前をつけて保存ダイアログの設定用構造体
 
 	//「ファイルを保存」ダイアログ
 	BOOL selFile;
@@ -481,21 +403,7 @@ void Stage::NewCreate()
 		}
 	}
 
-	string str;
-
-	for (int z = 0; z < ZSIZE; z++) {
-		for (int x = 0; x < XSIZE; x++) {
-			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color) + ",";
-		}
-	}
-
-	DWORD dwBytes = 0;  //書き込み位置
-	WriteFile(
-		hFile,                   //ファイルハンドル
-		str.c_str(),                  //保存するデータ（文字列）
-		(DWORD)strlen(str.c_str()),   //書き込む文字数
-		&dwBytes,                //書き込んだサイズを入れる変数
-		NULL);                   //オーバーラップド構造体（今回は使わない）
+	SaveTheTable(hFile);
 
 	CloseHandle(hFile);
 
@@ -531,14 +439,46 @@ void Stage::NowFileLoad()
 		&dwBytes,  //読み込んだサイズ
 		NULL);     //オーバーラップド構造体（今回は使わない）
 
+	LoadTheTable(data);
+
+	CloseHandle(hFile);
+}
+
+void Stage::SaveTheTable(HANDLE _hFile)
+{
+	string str;
+
+	for (int z = ZSIZE - 1; z >= 0; z--) {
+		for (int x = 0; x < XSIZE; x++) {
+
+			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color);
+
+			if (x > 0)
+				str += ",";
+		}
+
+		str += "\n";
+	}
+
+	DWORD dwBytes = 0;  //書き込み位置
+	WriteFile(
+		_hFile,                   //ファイルハンドル
+		str.c_str(),                  //保存するデータ（文字列）
+		(DWORD)strlen(str.c_str()),   //書き込む文字数
+		&dwBytes,                //書き込んだサイズを入れる変数
+		NULL);                   //オーバーラップド構造体（今回は使わない）
+}
+
+void Stage::LoadTheTable(char* _data)
+{
 	DWORD nowBytes = 0;
 
-	for (int z = 0; z < ZSIZE; z++) {
+	for (int z = ZSIZE - 1; z >= 0; z--) {
 		for (int x = 0; x < XSIZE; x++) {
 
 			string result;
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
-				result += data[nowBytes];
+			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
+				result += _data[nowBytes];
 				nowBytes++;
 			}
 
@@ -547,8 +487,8 @@ void Stage::NowFileLoad()
 			table_[x][z].height = atoi(result.c_str());
 
 			result.erase();
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {
-				result += data[nowBytes];
+			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {
+				result += _data[nowBytes];
 				nowBytes++;
 			}
 
@@ -558,6 +498,20 @@ void Stage::NowFileLoad()
 
 		}
 	}
+}
 
-	CloseHandle(hFile);
+OPENFILENAME Stage::InitOpenFileName()
+{
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("マップデータ(*.csv)\0*.csv\0");       //─|
+					  TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
+					  TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+	ofn.lpstrFile = fileName_;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "csv";                  	//デフォルト拡張子
+
+	return ofn;
 }

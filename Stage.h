@@ -80,6 +80,12 @@ public:
 
 	void NowFileLoad();
 
+	void SaveTheTable(HANDLE _hFile);
+
+	void LoadTheTable(char* _data);
+
+	OPENFILENAME InitOpenFileName();
+
 
 private:
 	int hModel_[MAX_COLOR];
