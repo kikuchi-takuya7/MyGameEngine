@@ -3,6 +3,8 @@
 #include "resource.h"
 #include "Engine/Direct3D.h"
 #include "Engine/Input.h"
+#include <fstream>
+#include <iostream>
 
 //const LPCSTR fileName = "Assets/無題.map";
 
@@ -329,45 +331,13 @@ void Stage::NameSave()
 
 void Stage::Load()
 {
+	//こんなことしなくてもstringstream使えばいい？まぁいいか
+	std::ofstream ofs("test.bin", std::ios_base::out | std::ios_base::binary);
 
-	//char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
-
-	//「ファイルを保存」ダイアログの設定
-	OPENFILENAME ofn = InitOpenFileName();
-
-	//「ファイルを保存」ダイアログ
-	BOOL selFile;
-	selFile = GetOpenFileName(&ofn);
-
-	//キャンセルしたら中断
-	if (selFile == FALSE) return;
-
-	HANDLE hFile;        //ファイルのハンドル
-	hFile = CreateFile(
-		fileName_,                 //ファイル名
-		GENERIC_READ,           //アクセスモード（書き込み用）
-		0,                      //共有（なし）
-		NULL,                   //セキュリティ属性（継承しない）
-		OPEN_EXISTING,           //作成方法
-		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
-		NULL);                  //拡張属性（なし）
-
-	//先にファイルの中身を全部読み込んでからコンマの処理
-			//ファイルのサイズを取得
-	DWORD fileSize = GetFileSize(hFile, NULL);
-
-	//ファイルのサイズ分メモリを確保
-	char* data;
-	data = new char[fileSize];
-
-	DWORD dwBytes = 0; //読み込み位置
-
-	ReadFile(
-		hFile,     //ファイルハンドル
-		data,      //データを入れる変数
-		fileSize,  //読み込むサイズ
-		&dwBytes,  //読み込んだサイズ
-		NULL);     //オーバーラップド構造体（今回は使わない）
+	if (!ofs) {
+		std::cerr << "ファイルオープンに失敗" << std::endl;
+		std::exit(1);
+	}
 
 	LoadTheTable(data);
 
