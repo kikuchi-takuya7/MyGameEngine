@@ -478,17 +478,6 @@ void Stage::LoadTheTable(char* _data)
 
 			string result;
 			
-			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {
-				result += _data[nowBytes];
-				nowBytes++;
-			}
-
-			nowBytes++;
-
-			table_[x][z].color = (COLOR)atoi(result.c_str());
-
-			result.erase();
-
 			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {//dwbyte‚Ì’†‚É“Ç‚İ‚ñ‚¾ƒTƒCƒY‚ª“ü‚Á‚Ä‚é‚©‚ç‚æ‚­‚È‚¢‚Ë
 				result += _data[nowBytes];
 				nowBytes++;
@@ -498,9 +487,21 @@ void Stage::LoadTheTable(char* _data)
 
 			table_[x][z].height = atoi(result.c_str());
 
-			
+			result.erase();
+
+			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {
+				result += _data[nowBytes];
+				nowBytes++;
+			}
+
+			nowBytes++;
+
+			table_[x][z].color = (COLOR)atoi(result.c_str());
+
 
 		}
+		//nowBytes++;
+
 	}
 }
 
