@@ -283,19 +283,28 @@ void Stage::CheckHitRay(bool &_isHit, int &_changeX, int &_changeZ)
 
 void Stage::Save()
 {
-	HANDLE hFile;        //ファイルのハンドル
-	hFile = CreateFile(
-		fileName_,                 //ファイル名
-		GENERIC_WRITE,           //アクセスモード（書き込み用）
-		0,                      //共有（なし）
-		NULL,                   //セキュリティ属性（継承しない）
-		CREATE_ALWAYS ,           //作成方法
-		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
-		NULL);                  //拡張属性（なし）
 
-	SaveTheTable(hFile);
-	
-	CloseHandle(hFile);
+	//「ファイルを保存」ダイアログの設定
+	OPENFILENAME ofn = InitOpenFileName();                         	//名前をつけて保存ダイアログの設定用構造体
+
+
+	//「ファイルを保存」ダイアログ
+	BOOL selFile;
+	selFile = GetSaveFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
+
+	std::ofstream ofs(fileName_, std::ios_base::out | std::ios_base::binary);
+
+	if (!ofs) {
+		std::cerr << "ファイルオープンに失敗" << std::endl;
+		std::exit(1);
+	}
+
+	SaveTheTable(ofs);
+
+	ofs.close();
 
 }
 
@@ -339,9 +348,21 @@ void Stage::Load()
 		std::exit(1);
 	}
 
-	LoadTheTable(data);
+	int num = 900;
+	double d = 7.85;
 
-	CloseHandle(hFile);
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
+
+			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
+			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
+			
+		}
+
+
+	}
+	
+	ofs.close();
 }
 
 void Stage::NewCreate()
@@ -373,7 +394,7 @@ void Stage::NewCreate()
 		}
 	}
 
-	SaveTheTable(hFile);
+	SaveTheTable(ofs);
 
 	CloseHandle(hFile);
 
@@ -414,29 +435,16 @@ void Stage::NowFileLoad()
 	CloseHandle(hFile);
 }
 
-void Stage::SaveTheTable(HANDLE _hFile)
+void Stage::SaveTheTable(std::ofstream _ofs)
 {
-	string str;
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
 
-	for (int z = ZSIZE - 1; z >= 0; z--) {
-		for (int x = 0; x < XSIZE; x++) {
+			_ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
+			_ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
 
-			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color);
-
-			if (x < XSIZE - 1)
-				str += ",";
 		}
-
-		str += "\n";
 	}
-
-	DWORD dwBytes = 0;  //書き込み位置
-	WriteFile(
-		_hFile,                   //ファイルハンドル
-		str.c_str(),                  //保存するデータ（文字列）
-		(DWORD)strlen(str.c_str()),   //書き込む文字数
-		&dwBytes,                //書き込んだサイズを入れる変数
-		NULL);                   //オーバーラップド構造体（今回は使わない）
 }
 
 void Stage::LoadTheTable(char* _data)

@@ -80,7 +80,7 @@ public:
 
 	void NowFileLoad();
 
-	void SaveTheTable(HANDLE _hFile);
+	void SaveTheTable(std::ofstream _ofs);
 
 	void LoadTheTable(char* _data);
 
