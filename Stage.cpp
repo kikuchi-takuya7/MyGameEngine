@@ -453,7 +453,7 @@ void Stage::SaveTheTable(HANDLE _hFile)
 
 			str += std::to_string(table_[x][z].height) + "," + std::to_string(table_[x][z].color);
 
-			if (x > 0)
+			if (x < XSIZE - 1)
 				str += ",";
 		}
 
@@ -480,7 +480,7 @@ void Stage::LoadTheTable(char* _data)
 			
 			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
 				result += _data[nowBytes];
-				nowBytes++;
+				nowBytes++;//次のバイト文字をターゲッティング
 			}
 
 			nowBytes++;//コンマの部分を飛ばす
