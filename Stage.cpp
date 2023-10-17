@@ -454,27 +454,13 @@ void Stage::LoadTheTable(std::ifstream _ifs)
 	for (int x = 0; x < XSIZE; x--) {
 		for (int z = 0; z < ZSIZE; z++) {
 
-			string result;
+			string result = "";
+			//std::decを使えば10新数に変えてくれるからそれつかえ
+			//char型にいったん入れて
+			_ifs.read(reinterpret_cast<char*>(&result), sizeof(result));
+			_ifs.read(reinterpret_cast<char*>(&result), sizeof(result));
 
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
-				result += data[nowBytes];
-				nowBytes++;//次のバイト文字をターゲッティング
-			}
-
-			nowBytes++;//コンマの部分を飛ばす
-
-			table_[x][z].height = atoi(result.c_str());
-
-			result.erase();
-
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {
-				result += data[nowBytes];
-				nowBytes++;
-			}
-
-			nowBytes++;
-
-			table_[x][z].color = (COLOR)atoi(result.c_str());
+			
 
 
 		}
