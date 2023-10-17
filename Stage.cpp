@@ -438,15 +438,48 @@ void Stage::SaveTheTable(std::ofstream _ofs)
 	}
 }
 
-void Stage::LoadTheTable(std::ifstream _ofs)
+void Stage::LoadTheTable(std::ifstream _ifs)
 {
-	for (int x = 0; x < XSIZE; x--) {
-		for (int z = 0; z < ZSIZE; z++) {
 
-			_ofs >> buf;
-			_ofs.read((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
+	//読込サイズを調べる。
+	_ifs.seekg(0, std::ios::end);//読み込み位置を一番最後に
+	long long int size = _ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
+	_ifs.seekg(0);
+
+	char* data = new char[size];
+	_ifs.read(data, size);
+
+	DWORD nowBytes = 0;
+
+	for (int z = ZSIZE - 1; z >= 0; z--) {
+		for (int x = 0; x < XSIZE; x++) {
+
+			string result;
+
+			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
+				result += data[nowBytes];
+				nowBytes++;//次のバイト文字をターゲッティング
+			}
+
+			nowBytes++;//コンマの部分を飛ばす
+
+			table_[x][z].height = atoi(result.c_str());
+
+			result.erase();
+
+			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {
+				result += data[nowBytes];
+				nowBytes++;
+			}
+
+			nowBytes++;
+
+			table_[x][z].color = (COLOR)atoi(result.c_str());
+
 
 		}
+		//nowBytes++;
+
 	}
 }
 
