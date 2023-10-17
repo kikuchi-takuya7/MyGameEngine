@@ -82,7 +82,7 @@ public:
 
 	void SaveTheTable(std::ofstream _ofs);
 
-	void LoadTheTable(char* _data);
+	void LoadTheTable(std::ifstream _ofs);
 
 	OPENFILENAME InitOpenFileName();
 

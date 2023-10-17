@@ -302,7 +302,14 @@ void Stage::Save()
 		std::exit(1);
 	}
 
-	SaveTheTable(ofs);
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
+
+			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
+			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
+
+		}
+	}
 
 	ofs.close();
 
@@ -323,19 +330,23 @@ void Stage::NameSave()
 	//キャンセルしたら中断
 	if (selFile == FALSE) return;
 
-	HANDLE hFile;        //ファイルのハンドル
-	hFile = CreateFile(
-		fileName_,                 //ファイル名
-		GENERIC_WRITE,           //アクセスモード（書き込み用）
-		0,                      //共有（なし）
-		NULL,                   //セキュリティ属性（継承しない）
-		CREATE_ALWAYS,           //作成方法
-		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
-		NULL);                  //拡張属性（なし）
+	std::ofstream ofs(fileName_, std::ios_base::out | std::ios_base::binary);
 
-	SaveTheTable(hFile);
+	if (!ofs) {
+		std::cerr << "ファイルオープンに失敗" << std::endl;
+		std::exit(1);
+	}
 
-	CloseHandle(hFile);
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
+
+			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
+			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
+
+		}
+	}
+
+	ofs.close();
 }
 
 void Stage::Load()
@@ -347,9 +358,6 @@ void Stage::Load()
 		std::cerr << "ファイルオープンに失敗" << std::endl;
 		std::exit(1);
 	}
-
-	int num = 900;
-	double d = 7.85;
 
 	for (int x = 0; x < XSIZE; x--) {
 		for (int z = 0; z < ZSIZE; z++) {
@@ -376,63 +384,46 @@ void Stage::NewCreate()
 	//キャンセルしたら中断
 	if (selFile == FALSE) return;
 
-	HANDLE hFile;        //ファイルのハンドル
-	hFile = CreateFile(
-		fileName_,                 //ファイル名
-		GENERIC_WRITE,           //アクセスモード（書き込み用）
-		0,                      //共有（なし）
-		NULL,                   //セキュリティ属性（継承しない）
-		CREATE_ALWAYS,           //作成方法
-		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
-		NULL);                  //拡張属性（なし）
+	std::ofstream ofs(fileName_, std::ios_base::out | std::ios_base::binary);
 
-	//初期化
-	for (int z = 0; z < ZSIZE; z++) {
-		for (int x = 0; x < XSIZE; x++) {
-			table_[x][z].height = 0;
-			table_[x][z].color = DEFAULT;
+	if (!ofs) {
+		std::cerr << "ファイルオープンに失敗" << std::endl;
+		std::exit(1);
+	}
+
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
+
+			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
+			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
+
 		}
 	}
 
-	SaveTheTable(ofs);
-
-	CloseHandle(hFile);
+	ofs.close();
 
 	NowFileLoad();
 }
 
 void Stage::NowFileLoad()
 {
-	HANDLE hFile;        //ファイルのハンドル
-	hFile = CreateFile(
-		fileName_,                 //ファイル名
-		GENERIC_READ,           //アクセスモード（書き込み用）
-		0,                      //共有（なし）
-		NULL,                   //セキュリティ属性（継承しない）
-		OPEN_EXISTING,           //作成方法
-		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
-		NULL);                  //拡張属性（なし）
+	std::ofstream ofs(fileName_, std::ios_base::out | std::ios_base::binary);
 
-	//先にファイルの中身を全部読み込んでからコンマの処理
-			//ファイルのサイズを取得
-	DWORD fileSize = GetFileSize(hFile, NULL);
+	if (!ofs) {
+		std::cerr << "ファイルオープンに失敗" << std::endl;
+		std::exit(1);
+	}
 
-	//ファイルのサイズ分メモリを確保
-	char* data;
-	data = new char[fileSize];
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
 
-	DWORD dwBytes = 0; //読み込み位置
+			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
+			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
 
-	ReadFile(
-		hFile,     //ファイルハンドル
-		data,      //データを入れる変数
-		fileSize,  //読み込むサイズ
-		&dwBytes,  //読み込んだサイズ
-		NULL);     //オーバーラップド構造体（今回は使わない）
+		}
+	}
 
-	LoadTheTable(data);
-
-	CloseHandle(hFile);
+	ofs.close();
 }
 
 void Stage::SaveTheTable(std::ofstream _ofs)
@@ -447,39 +438,15 @@ void Stage::SaveTheTable(std::ofstream _ofs)
 	}
 }
 
-void Stage::LoadTheTable(char* _data)
+void Stage::LoadTheTable(std::ifstream _ofs)
 {
-	DWORD nowBytes = 0;
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
 
-	for (int z = ZSIZE - 1; z >= 0; z--) {
-		for (int x = 0; x < XSIZE; x++) {
-
-			string result;
-			
-			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
-				result += _data[nowBytes];
-				nowBytes++;//次のバイト文字をターゲッティング
-			}
-
-			nowBytes++;//コンマの部分を飛ばす
-
-			table_[x][z].height = atoi(result.c_str());
-
-			result.erase();
-
-			while (_data[nowBytes] != ',' && _data[nowBytes] != '\n') {
-				result += _data[nowBytes];
-				nowBytes++;
-			}
-
-			nowBytes++;
-
-			table_[x][z].color = (COLOR)atoi(result.c_str());
-
+			_ofs >> buf;
+			_ofs.read((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
 
 		}
-		//nowBytes++;
-
 	}
 }
 
