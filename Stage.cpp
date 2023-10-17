@@ -451,8 +451,8 @@ void Stage::LoadTheTable(std::ifstream _ifs)
 
 	DWORD nowBytes = 0;
 
-	for (int z = ZSIZE - 1; z >= 0; z--) {
-		for (int x = 0; x < XSIZE; x++) {
+	for (int x = 0; x < XSIZE; x--) {
+		for (int z = 0; z < ZSIZE; z++) {
 
 			string result;
 
@@ -488,13 +488,12 @@ OPENFILENAME Stage::InitOpenFileName()
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
 	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.csv)\0*.csv\0");       //─|
-					  TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
+	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
 					  TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
 	ofn.lpstrFile = fileName_;               	//ファイル名
 	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
 	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
-	ofn.lpstrDefExt = "csv";                  	//デフォルト拡張子
+	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
 
 	return ofn;
 }
