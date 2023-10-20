@@ -80,9 +80,9 @@ public:
 
 	void NowFileLoad();
 
-	void SaveTheTable(std::ofstream _ofs);
+	void SaveTheTable(std::ofstream& _ofs);
 
-	void LoadTheTable(std::ifstream _ofs);
+	void LoadTheTable(std::ifstream& _ofs);
 
 	OPENFILENAME InitOpenFileName();
 

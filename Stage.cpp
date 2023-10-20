@@ -10,7 +10,7 @@
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"),hModel_{-1,-1,-1,-1,-1},fileName_{"新規フォルダ.csv"}
+	: GameObject(parent, "Stage"),hModel_{-1,-1,-1,-1,-1},fileName_{"新規フォルダ.bin"}
 {
 }
 
@@ -302,14 +302,7 @@ void Stage::Save()
 		std::exit(1);
 	}
 
-	for (int x = 0; x < XSIZE; x--) {
-		for (int z = 0; z < ZSIZE; z++) {
-
-			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
-			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
-
-		}
-	}
+	SaveTheTable(ofs);
 
 	ofs.close();
 
@@ -337,40 +330,33 @@ void Stage::NameSave()
 		std::exit(1);
 	}
 
-	for (int x = 0; x < XSIZE; x--) {
-		for (int z = 0; z < ZSIZE; z++) {
-
-			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
-			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
-
-		}
-	}
-
+	SaveTheTable(ofs);
 	ofs.close();
 }
 
 void Stage::Load()
 {
-	//こんなことしなくてもstringstream使えばいい？まぁいいか
-	std::ofstream ofs("test.bin", std::ios_base::out | std::ios_base::binary);
+	//「ファイルを保存」ダイアログの設定
+	OPENFILENAME ofn = InitOpenFileName();                         	//名前をつけて保存ダイアログの設定用構造体
 
-	if (!ofs) {
+	//「ファイルを保存」ダイアログ
+	BOOL selFile;
+	selFile = GetOpenFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
+
+	//こんなことしなくてもstringstream使えばいい？まぁいいか
+	std::ifstream ifs(fileName_, std::ios_base::in | std::ios_base::binary);
+
+	if (!ifs) {
 		std::cerr << "ファイルオープンに失敗" << std::endl;
 		std::exit(1);
 	}
 
-	for (int x = 0; x < XSIZE; x--) {
-		for (int z = 0; z < ZSIZE; z++) {
-
-			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
-			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
-			
-		}
-
-
-	}
+	LoadTheTable(ifs);
 	
-	ofs.close();
+	ifs.close();
 }
 
 void Stage::NewCreate()
@@ -391,14 +377,7 @@ void Stage::NewCreate()
 		std::exit(1);
 	}
 
-	for (int x = 0; x < XSIZE; x--) {
-		for (int z = 0; z < ZSIZE; z++) {
-
-			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
-			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
-
-		}
-	}
+	SaveTheTable(ofs);
 
 	ofs.close();
 
@@ -414,23 +393,18 @@ void Stage::NowFileLoad()
 		std::exit(1);
 	}
 
-	for (int x = 0; x < XSIZE; x--) {
-		for (int z = 0; z < ZSIZE; z++) {
-
-			ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
-			ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
-
-		}
-	}
+	SaveTheTable(ofs);
 
 	ofs.close();
 }
 
-void Stage::SaveTheTable(std::ofstream _ofs)
+void Stage::SaveTheTable(std::ofstream& _ofs)
 {
-	for (int x = 0; x < XSIZE; x--) {
+	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 
+			int s = sizeof(table_[x][z].height);
+			int e = sizeof(table_[x][z].color);
 			_ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
 			_ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
 
@@ -438,7 +412,7 @@ void Stage::SaveTheTable(std::ofstream _ofs)
 	}
 }
 
-void Stage::LoadTheTable(std::ifstream _ifs)
+void Stage::LoadTheTable(std::ifstream& _ifs)
 {
 
 	//読込サイズを調べる。
@@ -446,23 +420,62 @@ void Stage::LoadTheTable(std::ifstream _ifs)
 	long long int size = _ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
 	_ifs.seekg(0);
 
-	char* data = new char[size];
-	_ifs.read(data, size);
+	//char* data = new char[size];
+	//_ifs.read(data, size);
+
+	char* data = new char[sizeof(int)];
 
 	DWORD nowBytes = 0;
 
-	for (int x = 0; x < XSIZE; x--) {
+	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 
 			string result = "";
 			//std::decを使えば10新数に変えてくれるからそれつかえ
 			//char型にいったん入れて
-			_ifs.read(reinterpret_cast<char*>(&result), sizeof(result));
-			_ifs.read(reinterpret_cast<char*>(&result), sizeof(result));
 
-			
+#if 0
+			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
+				result += data[nowBytes];
+				nowBytes++;//次のバイト文字をターゲッティング
+			}
 
+			nowBytes++;//コンマの部分を飛ばす
 
+			table_[x][z].height = stoi(result,0,2);
+
+			result.erase();
+
+			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {
+				result += data[nowBytes];
+				nowBytes++;
+			}
+
+			nowBytes++;
+
+			table_[x][z].color = (COLOR)stoi(result, 0, 2);
+#else
+
+			//dataに値が入らないおかしいよ
+			int cSize = sizeof(data);
+
+			_ifs.read(data, sizeof(data));
+
+			result = data;
+			//nowBytes++;//コンマの部分を飛ばす
+
+			table_[x][z].height = stoi(result, nullptr, 2);
+
+			result.erase();
+
+			_ifs.read(data, cSize);
+
+			//nowBytes++;
+			result = data;
+
+			table_[x][z].color = (COLOR)stoi(result, nullptr, 2);
+
+#endif
 		}
 		//nowBytes++;
 
@@ -475,6 +488,7 @@ OPENFILENAME Stage::InitOpenFileName()
 	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
 	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
 	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
+					  TEXT("バイナリデータ(*.bin)\0*.bin\0")
 					  TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
 	ofn.lpstrFile = fileName_;               	//ファイル名
 	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
