@@ -354,7 +354,76 @@ void Stage::Load()
 		std::exit(1);
 	}
 
-	LoadTheTable(ifs);
+	//読込サイズを調べる。
+	ifs.seekg(0, std::ios_base::end);//読み込み位置を一番最後に
+	long long int size = ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
+	ifs.seekg(0);
+
+	char* data = new char[size];
+	//data = nullptr;
+	ifs.read(data, size);
+
+	//char* data = new char[sizeof(int)];
+
+	DWORD nowBytes = 0;
+
+	for (int x = 0; x < XSIZE; x++) {
+		for (int z = 0; z < ZSIZE; z++) {
+
+			string result = "";
+			//std::decを使えば10新数に変えてくれるからそれつかえ
+			//char型にいったん入れて
+
+#if 0
+			for (int i = 0; i < sizeof(int); i++) {//dwbyteの中に読み込んだサイズが入ってるからよくないね
+				result += data[nowBytes];
+				nowBytes++;//次のバイト文字をターゲッティング
+			}
+
+			nowBytes++;//コンマの部分を飛ばす
+
+			table_[x][z].height = stoi(result, 0, 2);
+
+			result.erase();
+
+			for (int i = 0; i < sizeof(int); i++) {
+				result += data[nowBytes];
+				nowBytes++;
+			}
+
+			nowBytes++;
+
+			table_[x][z].color = (COLOR)stoi(result, 0, 2);
+#else
+
+			//dataに値が入らないおかしいよ
+			int cSize = sizeof(data);
+
+			ifs.read(data, cSize);
+
+			result = data;
+			//nowBytes++;//コンマの部分を飛ばす
+
+			table_[x][z].height = stoi(result, nullptr, 2);
+
+			result.erase();
+
+			ifs.read(data, cSize);
+
+			//nowBytes++;
+			result = data;
+
+			table_[x][z].color = (COLOR)stoi(result, nullptr, 2);
+
+#endif
+		}
+		//nowBytes++;
+
+	}
+
+	delete data;
+
+	//LoadTheTable(ifs);
 	
 	ifs.close();
 }
@@ -376,6 +445,8 @@ void Stage::NewCreate()
 		std::cerr << "ファイルオープンに失敗" << std::endl;
 		std::exit(1);
 	}
+
+
 
 	SaveTheTable(ofs);
 
@@ -408,6 +479,8 @@ void Stage::SaveTheTable(std::ofstream& _ofs)
 			_ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
 			_ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
 
+			string yg = " ";
+			_ofs.write(yg.c_str(), sizeof(yg));
 		}
 	}
 }
@@ -420,10 +493,11 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 	long long int size = _ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
 	_ifs.seekg(0);
 
-	//char* data = new char[size];
-	//_ifs.read(data, size);
+	char* data = new char[size];
+	data = nullptr;
+	_ifs.read(data, size);
 
-	char* data = new char[sizeof(int)];
+	//char* data = new char[sizeof(int)];
 
 	DWORD nowBytes = 0;
 
@@ -434,8 +508,8 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 			//std::decを使えば10新数に変えてくれるからそれつかえ
 			//char型にいったん入れて
 
-#if 0
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {//dwbyteの中に読み込んだサイズが入ってるからよくないね
+#if 1
+			for (int i = 0; i < sizeof(int);i++) {//dwbyteの中に読み込んだサイズが入ってるからよくないね
 				result += data[nowBytes];
 				nowBytes++;//次のバイト文字をターゲッティング
 			}
@@ -446,7 +520,7 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 
 			result.erase();
 
-			while (data[nowBytes] != ',' && data[nowBytes] != '\n') {
+			for (int i = 0; i < sizeof(int); i++) {
 				result += data[nowBytes];
 				nowBytes++;
 			}
@@ -459,7 +533,7 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 			//dataに値が入らないおかしいよ
 			int cSize = sizeof(data);
 
-			_ifs.read(data, sizeof(data));
+			_ifs.read(data, cSize);
 
 			result = data;
 			//nowBytes++;//コンマの部分を飛ばす
@@ -480,6 +554,8 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 		//nowBytes++;
 
 	}
+
+	delete data;
 }
 
 OPENFILENAME Stage::InitOpenFileName()
