@@ -355,15 +355,12 @@ void Stage::Load()
 	}
 
 	//読込サイズを調べる。
-	ifs.seekg(0, std::ios_base::end);//読み込み位置を一番最後に
-	long long int size = ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
-	ifs.seekg(0);
+	//ifs.seekg(0, std::ios_base::end);//読み込み位置を一番最後に
+	//long long int size = ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
+	//ifs.seekg(0);
 
-	char* data = new char[size];
-	//data = nullptr;
-	ifs.read(data, size);
-
-	//char* data = new char[sizeof(int)];
+	/*char* data = new char[size];
+	ifs.read(data, size);*/
 
 	DWORD nowBytes = 0;
 
@@ -395,33 +392,32 @@ void Stage::Load()
 
 			table_[x][z].color = (COLOR)stoi(result, 0, 2);
 #else
+			//ifs.read(data, sizeof(int));
 
 			//dataに値が入らないおかしいよ
-			int cSize = sizeof(data);
+			int cSize = sizeof(int);
 
-			ifs.read(data, cSize);
+			ifs.read((char*)&table_[x][z].height, cSize);
 
-			result = data;
+			//result = data;
 			//nowBytes++;//コンマの部分を飛ばす
 
-			table_[x][z].height = stoi(result, nullptr, 2);
+			//table_[x][z].height = stoi(result, nullptr, 2);
 
-			result.erase();
+			//result.erase();
 
-			ifs.read(data, cSize);
+			ifs.read((char*)&table_[x][z].color, cSize);
 
 			//nowBytes++;
-			result = data;
+			//result = data;
 
-			table_[x][z].color = (COLOR)stoi(result, nullptr, 2);
+			//table_[x][z].color = (COLOR)stoi(result, nullptr, 2);
 
 #endif
 		}
 		//nowBytes++;
 
 	}
-
-	delete data;
 
 	//LoadTheTable(ifs);
 	
@@ -446,7 +442,13 @@ void Stage::NewCreate()
 		std::exit(1);
 	}
 
+	for (int x = 0; x < XSIZE; x++) {
+		for (int z = 0; z < ZSIZE; z++) {
+			table_[x][z].color = DEFAULT;
+			table_[x][z].height = 0;
 
+		}
+	}
 
 	SaveTheTable(ofs);
 
@@ -479,8 +481,8 @@ void Stage::SaveTheTable(std::ofstream& _ofs)
 			_ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
 			_ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
 
-			string yg = " ";
-			_ofs.write(yg.c_str(), sizeof(yg));
+			/*string yg = " ";
+			_ofs.write(yg.c_str(), sizeof(yg));*/
 		}
 	}
 }
@@ -563,8 +565,7 @@ OPENFILENAME Stage::InitOpenFileName()
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
 	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
-					  TEXT("バイナリデータ(*.bin)\0*.bin\0")
+	ofn.lpstrFilter = TEXT("バイナリデータ(*.bin)\0*.bin\0")
 					  TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
 	ofn.lpstrFile = fileName_;               	//ファイル名
 	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
