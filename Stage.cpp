@@ -354,72 +354,7 @@ void Stage::Load()
 		std::exit(1);
 	}
 
-	//読込サイズを調べる。
-	//ifs.seekg(0, std::ios_base::end);//読み込み位置を一番最後に
-	//long long int size = ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
-	//ifs.seekg(0);
-
-	/*char* data = new char[size];
-	ifs.read(data, size);*/
-
-	DWORD nowBytes = 0;
-
-	for (int x = 0; x < XSIZE; x++) {
-		for (int z = 0; z < ZSIZE; z++) {
-
-			string result = "";
-			//std::decを使えば10新数に変えてくれるからそれつかえ
-			//char型にいったん入れて
-
-#if 0
-			for (int i = 0; i < sizeof(int); i++) {//dwbyteの中に読み込んだサイズが入ってるからよくないね
-				result += data[nowBytes];
-				nowBytes++;//次のバイト文字をターゲッティング
-			}
-
-			nowBytes++;//コンマの部分を飛ばす
-
-			table_[x][z].height = stoi(result, 0, 2);
-
-			result.erase();
-
-			for (int i = 0; i < sizeof(int); i++) {
-				result += data[nowBytes];
-				nowBytes++;
-			}
-
-			nowBytes++;
-
-			table_[x][z].color = (COLOR)stoi(result, 0, 2);
-#else
-			//ifs.read(data, sizeof(int));
-
-			//dataに値が入らないおかしいよ
-			int cSize = sizeof(int);
-
-			ifs.read((char*)&table_[x][z].height, cSize);
-
-			//result = data;
-			//nowBytes++;//コンマの部分を飛ばす
-
-			//table_[x][z].height = stoi(result, nullptr, 2);
-
-			//result.erase();
-
-			ifs.read((char*)&table_[x][z].color, cSize);
-
-			//nowBytes++;
-			//result = data;
-
-			//table_[x][z].color = (COLOR)stoi(result, nullptr, 2);
-
-#endif
-		}
-		//nowBytes++;
-
-	}
-
-	//LoadTheTable(ifs);
+	LoadTheTable(ifs);
 	
 	ifs.close();
 }
@@ -491,15 +426,12 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 {
 
 	//読込サイズを調べる。
-	_ifs.seekg(0, std::ios::end);//読み込み位置を一番最後に
-	long long int size = _ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
-	_ifs.seekg(0);
+	//ifs.seekg(0, std::ios_base::end);//読み込み位置を一番最後に
+	//long long int size = ifs.tellg();//現在の読み込み位置を取得（一番最後だからファイルサイズになるはず）
+	//ifs.seekg(0);
 
-	char* data = new char[size];
-	data = nullptr;
-	_ifs.read(data, size);
-
-	//char* data = new char[sizeof(int)];
+	/*char* data = new char[size];
+	ifs.read(data, size);*/
 
 	DWORD nowBytes = 0;
 
@@ -510,15 +442,15 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 			//std::decを使えば10新数に変えてくれるからそれつかえ
 			//char型にいったん入れて
 
-#if 1
-			for (int i = 0; i < sizeof(int);i++) {//dwbyteの中に読み込んだサイズが入ってるからよくないね
+#if 0
+			for (int i = 0; i < sizeof(int); i++) {//dwbyteの中に読み込んだサイズが入ってるからよくないね
 				result += data[nowBytes];
 				nowBytes++;//次のバイト文字をターゲッティング
 			}
 
 			nowBytes++;//コンマの部分を飛ばす
 
-			table_[x][z].height = stoi(result,0,2);
+			table_[x][z].height = stoi(result, 0, 2);
 
 			result.erase();
 
@@ -531,33 +463,32 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 
 			table_[x][z].color = (COLOR)stoi(result, 0, 2);
 #else
+			//ifs.read(data, sizeof(int));
 
 			//dataに値が入らないおかしいよ
-			int cSize = sizeof(data);
+			int cSize = sizeof(int);
 
-			_ifs.read(data, cSize);
+			_ifs.read((char*)&table_[x][z].height, cSize);
 
-			result = data;
+			//result = data;
 			//nowBytes++;//コンマの部分を飛ばす
 
-			table_[x][z].height = stoi(result, nullptr, 2);
+			//table_[x][z].height = stoi(result, nullptr, 2);
 
-			result.erase();
+			//result.erase();
 
-			_ifs.read(data, cSize);
+			_ifs.read((char*)&table_[x][z].color, cSize);
 
 			//nowBytes++;
-			result = data;
+			//result = data;
 
-			table_[x][z].color = (COLOR)stoi(result, nullptr, 2);
+			//table_[x][z].color = (COLOR)stoi(result, nullptr, 2);
 
 #endif
 		}
 		//nowBytes++;
 
 	}
-
-	delete data;
 }
 
 OPENFILENAME Stage::InitOpenFileName()
