@@ -206,8 +206,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			((Stage*)pRootJob->FindObject("Stage"))->NewCreate();
 			break;
 		case ID_MENU_OPEN:
-			OutputDebugString("hiraku");
-			((Stage*)pRootJob->FindObject("Stage"))->Load();
+			OutputDebugString("開く");
+			((Stage*)pRootJob->FindObject("Stage"))->NowFileLoad();
 			break;
 		case ID_MENU_SAVE: {
 			OutputDebugString("セーブ");
@@ -215,7 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		case ID_MENU_NAMESAVE:
-			OutputDebugString("名前を付けて");
+			OutputDebugString("名前を付けて保存");
 			((Stage*)pRootJob->FindObject("Stage"))->NameSave();
 			break;
 		}

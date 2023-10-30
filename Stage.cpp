@@ -337,7 +337,15 @@ void Stage::NameSave()
 void Stage::Load()
 {
 	//「ファイルを保存」ダイアログの設定
-	OPENFILENAME ofn = InitOpenFileName();                         	//名前をつけて保存ダイアログの設定用構造体
+	OPENFILENAME ofn;//名前をつけて保存ダイアログの設定用構造体
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("バイナリデータ(*.bin)\0*.bin\0")
+		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+	ofn.lpstrFile = fileName_;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_FILEMUSTEXIST;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
 
 	//「ファイルを保存」ダイアログ
 	BOOL selFile;
@@ -346,7 +354,7 @@ void Stage::Load()
 	//キャンセルしたら中断
 	if (selFile == FALSE) return;
 
-	//こんなことしなくてもstringstream使えばいい？まぁいいか
+
 	std::ifstream ifs(fileName_, std::ios_base::in | std::ios_base::binary);
 
 	if (!ifs) {
@@ -361,8 +369,8 @@ void Stage::Load()
 
 void Stage::NewCreate()
 {
-	OPENFILENAME ofn = InitOpenFileName();                         	//名前をつけて保存ダイアログの設定用構造体
-
+	OPENFILENAME ofn;//名前をつけて保存ダイアログの設定用構造体
+	
 	//「ファイルを保存」ダイアログ
 	BOOL selFile;
 	selFile = GetSaveFileName(&ofn);

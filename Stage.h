@@ -72,12 +72,16 @@ public:
 	//セーブする
 	void Save();
 
+	//名前を付けて保存
 	void NameSave();
 
+	//ファイルのロード、開く
 	void Load();
 
+	//ファイルの新規作成
 	void NewCreate();
 
+	//今のファイルをロードする。
 	void NowFileLoad();
 
 	void SaveTheTable(std::ofstream& _ofs);
