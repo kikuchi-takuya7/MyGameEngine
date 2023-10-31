@@ -71,7 +71,7 @@ void Stage::Update()
 	{
 	case DLG_UP:
 
-		if (isHit && table_[changeX][changeZ].height < 5) {
+		if (isHit && table_[changeX][changeZ].height < 5) {//5以上いかないように
 			Dlg_Up_Update(changeX, changeZ);
 		}
 			
@@ -79,7 +79,7 @@ void Stage::Update()
 
 	case DLG_DOWN:
 
-		if (isHit && table_[changeX][changeZ].height > 0) {
+		if (isHit && table_[changeX][changeZ].height > 0) {//０以下にならないように
 			Dlg_Down_Update(changeX, changeZ);
 		}
 			
@@ -182,6 +182,10 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 			//return TRUE;
 		}
 
+		if (IsDlgButtonChecked(hDlg, IDC_BACK)) {
+			BackUpLoad();
+		}
+
 		select_ = (COLOR)SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
 
 		return TRUE;
@@ -191,18 +195,21 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 void Stage::Dlg_Up_Update(int _changeX, int _changeZ)
 {
+	BackUpSave(_changeX,_changeZ);
 	table_[_changeX][_changeZ].height++;
 
 }
 
 void Stage::Dlg_Down_Update(int _changeX, int _changeZ)
 {
+	BackUpSave(_changeX, _changeZ);
 	table_[_changeX][_changeZ].height--;
 
 }
 
 void Stage::Dlg_Change_Update(int _changeX, int _changeZ)
 {
+	BackUpSave(_changeX, _changeZ);
 	table_[_changeX][_changeZ].color = select_;
 	
 }
@@ -267,7 +274,7 @@ void Stage::CheckHitRay(bool &_isHit, int &_changeX, int &_changeZ)
 
 				Model::RayCast(hModel_[0], data);
 
-				//わざわざisHitを作ってるのは
+				//わざわざisHitを作ってるのはfor文の最後のdata.hitがfalseだった時でも問題なくするため
 				if (data.hit) {
 					if (minDist > data.dist) {
 						minDist = data.dist;
@@ -512,4 +519,18 @@ OPENFILENAME Stage::InitOpenFileName()
 	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
 
 	return ofn;
+}
+
+void Stage::BackUpSave(int _x, int _z)
+{
+	BackUpData backUp = BackUpData(_x, _z, table_[_x][_z].height, table_[_x][_z].color);
+	backUp_.push(backUp);
+}
+
+void Stage::BackUpLoad()
+{
+	BackUpData b = backUp_.top();
+	backUp_.pop();
+	table_[b.x][b.z].color = b.color;
+	table_[b.x][b.z].height = b.height;
 }

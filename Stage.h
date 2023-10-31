@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include <Windows.h>
+#include <stack>
 
 namespace {
 	const int XSIZE{ 15 };
@@ -28,7 +29,18 @@ namespace {
 		int height;
 	}table_[XSIZE][ZSIZE];
 
-	
+	struct BackUpData {
+		int x;
+		int z;
+		int height;
+		COLOR color;
+		BackUpData(int _x,int _z,int _h,COLOR _c){
+			x = _x;
+			z = _z;
+			height = _h;
+			color = _c;
+		}
+	};
 
 }
 
@@ -84,11 +96,17 @@ public:
 	//今のファイルをロードする。
 	void NowFileLoad();
 
+	//保存処理を関数化
 	void SaveTheTable(std::ofstream& _ofs);
-
 	void LoadTheTable(std::ifstream& _ofs);
 
 	OPENFILENAME InitOpenFileName();
+
+	//変更されたら一時的に保存する
+	void BackUpSave(int _x,int _z);
+
+	//変更を元に戻す
+	void BackUpLoad();
 
 
 private:
@@ -98,5 +116,7 @@ private:
 	COLOR select_; //種類
 
 	char fileName_[MAX_PATH];  //ファイル名を入れる変数
+
+	std::stack<BackUpData> backUp_;
 
 };
