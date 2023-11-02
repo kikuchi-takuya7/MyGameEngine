@@ -169,24 +169,31 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 	case WM_COMMAND:
 
+		switch (LOWORD(wp)) 
+		{
+		case IDC_BACK:
+			BackUpLoad();
+			return TRUE;
+			break;
+		case IDC_FORWARD:
+			RedoLoad();
+			return TRUE;
+			break;
+		}
+
 		if (IsDlgButtonChecked(hDlg, IDC_RADIO_UP)) {
 			mode_ = DLG_UP;
 			return TRUE;
 		}
-		else if (IsDlgButtonChecked(hDlg, IDC_RADIO_DOWN)) {
+		if (IsDlgButtonChecked(hDlg, IDC_RADIO_DOWN)) {
 			mode_ = DLG_DOWN;
 			return TRUE;
 		}
-		else if (IsDlgButtonChecked(hDlg, IDC_RADIO_CHANGE)) {
+		if (IsDlgButtonChecked(hDlg, IDC_RADIO_CHANGE)) {
+			select_ = (COLOR)SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
 			mode_ = DLG_CHANGE;
-			//return TRUE;
+			return TRUE;
 		}
-
-		if (IsDlgButtonChecked(hDlg, IDC_BACK)) {
-			BackUpLoad();
-		}
-
-		select_ = (COLOR)SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
 
 		return TRUE;
 	}
@@ -195,6 +202,7 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 void Stage::Dlg_Up_Update(int _changeX, int _changeZ)
 {
+	ClearRedo();
 	BackUpSave(_changeX,_changeZ);
 	table_[_changeX][_changeZ].height++;
 
@@ -202,6 +210,7 @@ void Stage::Dlg_Up_Update(int _changeX, int _changeZ)
 
 void Stage::Dlg_Down_Update(int _changeX, int _changeZ)
 {
+	ClearRedo();
 	BackUpSave(_changeX, _changeZ);
 	table_[_changeX][_changeZ].height--;
 
@@ -209,6 +218,7 @@ void Stage::Dlg_Down_Update(int _changeX, int _changeZ)
 
 void Stage::Dlg_Change_Update(int _changeX, int _changeZ)
 {
+	ClearRedo();
 	BackUpSave(_changeX, _changeZ);
 	table_[_changeX][_changeZ].color = select_;
 	
@@ -529,8 +539,48 @@ void Stage::BackUpSave(int _x, int _z)
 
 void Stage::BackUpLoad()
 {
+	//何もないならリターン
+	if (backUp_.empty())
+		return;
+
+	//やり直す用のデータを保存して、一つ戻してpopする
 	BackUpData b = backUp_.top();
 	backUp_.pop();
+
+	RedoSave(b.x, b.z);
+
 	table_[b.x][b.z].color = b.color;
 	table_[b.x][b.z].height = b.height;
+}
+
+
+
+void Stage::RedoSave(int _x, int _z)
+{
+	BackUpData redo = BackUpData(_x, _z, table_[_x][_z].height, table_[_x][_z].color);
+	redo_.push(redo);
+}
+
+void Stage::RedoLoad()
+{
+
+	if (redo_.empty())
+		return;
+
+	BackUpData b = redo_.top();
+	redo_.pop();
+
+	BackUpSave(b.x, b.z);
+
+	table_[b.x][b.z].color = b.color;
+	table_[b.x][b.z].height = b.height;
+	
+}
+
+void Stage::ClearRedo()
+{
+	while (!redo_.empty())
+	{
+		redo_.pop();
+	}
 }

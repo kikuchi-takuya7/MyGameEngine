@@ -102,12 +102,20 @@ public:
 
 	OPENFILENAME InitOpenFileName();
 
-	//変更されたら一時的に保存する
+	//変更されたら保存する
 	void BackUpSave(int _x,int _z);
 
 	//変更を元に戻す
 	void BackUpLoad();
 
+	//変更が元に戻されたら元のデータを保存
+	void RedoSave(int _x, int _z);
+
+	//元に戻された元のデータを復元する
+	void RedoLoad();
+
+	//redoの要素を空にする
+	void ClearRedo();
 
 private:
 	int hModel_[MAX_COLOR];
@@ -117,6 +125,10 @@ private:
 
 	char fileName_[MAX_PATH];  //ファイル名を入れる変数
 
+	//一つ戻す用のバックアップ
 	std::stack<BackUpData> backUp_;
+
+	//元に戻す用のバックアップ
+	std::stack<BackUpData> redo_;
 
 };
