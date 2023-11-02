@@ -386,7 +386,7 @@ void Stage::Load()
 
 void Stage::NewCreate()
 {
-	OPENFILENAME ofn;//名前をつけて保存ダイアログの設定用構造体
+	OPENFILENAME ofn = InitOpenFileName();//名前をつけて保存ダイアログの設定用構造体
 	
 	//「ファイルを保存」ダイアログ
 	BOOL selFile;
@@ -402,6 +402,7 @@ void Stage::NewCreate()
 		std::exit(1);
 	}
 
+	//新規ファイルの初期化
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 			table_[x][z].color = DEFAULT;
@@ -436,13 +437,8 @@ void Stage::SaveTheTable(std::ofstream& _ofs)
 	for (int x = 0; x < XSIZE; x++) {
 		for (int z = 0; z < ZSIZE; z++) {
 
-			int s = sizeof(table_[x][z].height);
-			int e = sizeof(table_[x][z].color);
-			_ofs.write((const char*)&table_[x][z].height, sizeof(table_[x][z].height));
-			_ofs.write((const char*)&table_[x][z].color, sizeof(table_[x][z].color));
-
-			/*string yg = " ";
-			_ofs.write(yg.c_str(), sizeof(yg));*/
+			_ofs.write((const char*)&table_[x][z].height, sizeof(int));
+			_ofs.write((const char*)&table_[x][z].color, sizeof(int));
 		}
 	}
 }
@@ -468,6 +464,9 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 			//char型にいったん入れて
 
 #if 0
+			//csvで読み込めるようにしたコードの名残
+			//
+
 			for (int i = 0; i < sizeof(int); i++) {//dwbyteの中に読み込んだサイズが入ってるからよくないね
 				result += data[nowBytes];
 				nowBytes++;//次のバイト文字をターゲッティング
@@ -494,6 +493,8 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 			int cSize = sizeof(int);
 
 			_ifs.read((char*)&table_[x][z].height, cSize);
+			_ifs.read((char*)&table_[x][z].color, cSize);
+
 
 			//result = data;
 			//nowBytes++;//コンマの部分を飛ばす
@@ -502,8 +503,6 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 
 			//result.erase();
 
-			_ifs.read((char*)&table_[x][z].color, cSize);
-
 			//nowBytes++;
 			//result = data;
 
@@ -511,8 +510,6 @@ void Stage::LoadTheTable(std::ifstream& _ifs)
 
 #endif
 		}
-		//nowBytes++;
-
 	}
 }
 
